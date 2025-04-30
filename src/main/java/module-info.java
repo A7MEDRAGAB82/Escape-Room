@@ -6,4 +6,8 @@ module com.example.escaperoombusinesssystem {
 
     opens com.example.escaperoombusinesssystem to javafx.fxml;
     exports com.example.escaperoombusinesssystem;
+    exports;
+    opens to
+    exports;
+    opens to
 }
