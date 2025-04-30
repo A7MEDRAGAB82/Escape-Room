@@ -25,7 +25,7 @@ public class EscapeRoom {
        }
 this.clues.addLast(clue);
     }
-    ArrayList<Clue> getClues(){
+   public ArrayList<Clue> getClues(){
 return clues;
     }
 

@@ -4,7 +4,7 @@ public class Clue implements Solvable {
     private  boolean solved;
     private String type;
 
-    public Clue(String description, String slution, String type) {
+    public Clue(String description, String solution, String type) {
         if (description == null ) {
             throw new IllegalArgumentException("Description cannot be null or empty");
         }
@@ -16,7 +16,7 @@ public class Clue implements Solvable {
         }
 
         this.description = description;
-        this.solution = slution;
+        this.solution = solution;
         this.type = type;
     }
    public boolean isSolved(){
