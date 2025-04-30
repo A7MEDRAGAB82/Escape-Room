@@ -1,3 +1,5 @@
+package com.example.escaperoombusinesssystem;
+
 import java.util.ArrayList;
 
 public class EscapeRoom {
@@ -21,7 +23,7 @@ public class EscapeRoom {
     }
    public void addClue(Clue clue){
        if (clue == null) {
-           throw new IllegalArgumentException("Clue cannot be null");
+           throw new IllegalArgumentException("com.example.escaperoombusinesssystem.Clue cannot be null");
        }
 this.clues.addLast(clue);
     }

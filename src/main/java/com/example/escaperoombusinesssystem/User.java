@@ -1,3 +1,5 @@
+package com.example.escaperoombusinesssystem;
+
 public abstract class User {
     protected String username , role;
     public User(String username , String role){

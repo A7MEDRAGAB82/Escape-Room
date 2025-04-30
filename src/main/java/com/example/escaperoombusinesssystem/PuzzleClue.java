@@ -1,4 +1,6 @@
-public class PuzzleClue extends Clue{
+package com.example.escaperoombusinesssystem;
+
+public class PuzzleClue extends Clue {
     private String puzzleDetails;
 
     public PuzzleClue(String description, String slution,String puzzleDetails ) {

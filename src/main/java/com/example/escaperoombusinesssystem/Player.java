@@ -1,3 +1,5 @@
+package com.example.escaperoombusinesssystem;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ public class Player {
 
     public Player(String name) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Player 's name can't be empty");
+            throw new IllegalArgumentException("com.example.escaperoombusinesssystem.Player 's name can't be empty");
         }
         else {
             this.name = name;
