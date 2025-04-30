@@ -24,6 +24,7 @@ public class SignUp {
 
     public void initControls(){
         sceneTitle = new Label("Sign Up");
+        sceneTitle.getStyleClass().add("sceneTitle");
         usernameLabel = new Label("Username: ");
         passwordLabel = new Label("Password: ");
         confirmPasswordLabel = new Label("Confirm Password: ");
@@ -33,18 +34,12 @@ public class SignUp {
         signUpButton = new Button("Sign Up");
         signUpGrid = new GridPane();
 
-        signUpGrid.add(sceneTitle, 0, 0);
-        signUpGrid.add(usernameLabel, 0, 1);
-        signUpGrid.add(usernameTextField, 0, 1);
-        signUpGrid.add(passwordLabel, 0, 2);
-        signUpGrid.add(passwordTextField, 0, 2);
-        signUpGrid.add(confirmPasswordLabel, 0, 3);
-        signUpGrid.add(confirmPasswordTextField, 0, 3);
-        signUpGrid.add(signUpButton, 0, 4);
-
+      signUpGrid.addColumn(0,sceneTitle,usernameLabel,usernameTextField,passwordLabel,
+              passwordTextField,confirmPasswordLabel,confirmPasswordTextField, signUpButton);
+      signUpGrid.getStyleClass().add("signUpGrid");
         signUpGrid.setAlignment(Pos.CENTER);
-        signUpGrid.setHgap(10);
-        signUpGrid.setVgap(10);
+//        signUpGrid.setHgap(10);
+        signUpGrid.setVgap(15);
 
     }
 
@@ -53,6 +48,8 @@ public class SignUp {
     }
 
     public Scene getScene() {
-        return new Scene(signUpGrid,400,500);
+        Scene signUpScene =  new Scene(signUpGrid,700,500);
+        signUpScene.getStylesheets().add(getClass().getResource("main.css").toExternalForm());
+        return signUpScene;
     }
 }
