@@ -1,0 +1,30 @@
+
+.root {
+    -fx-font-family: "Arial Rounded MT Bold", sans-serif;
+    -fx-background-color: linear-gradient(
+            to right bottom,
+            #00131e,
+            #1b0023,
+            #00131e
+    );
+}
+
+.sceneTitle {
+    -fx-font-size: xx-large;
+    -fx-font-weight: bold;
+}
+
+.label {
+    -fx-text-fill: white;
+
+}
+.button {
+    -fx-background-color: #7915b5;
+    -fx-border-radius: 50px;
+    -fx-text-fill: white;
+    -fx-padding: 8px 12px;
+}
+
+.signUoGrid {
+    -fx-background-color: #ffeeee;
+}
