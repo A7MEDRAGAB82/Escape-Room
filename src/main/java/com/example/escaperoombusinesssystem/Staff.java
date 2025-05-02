@@ -5,7 +5,12 @@ public class Staff extends User {
         super(username, "Staff" ,  plainTextPassword);
     }
 
-    // public void accessDashboard(){}
+    @Override
+    public void accessDashboard() {
+
+    }
+
+
     // public void resetRoom(Room com.example.escaperoombusinesssystem.EscapeRoom){}
     // public void updateClue(com.example.escaperoombusinesssystem.Clue clue ,String description){}
 
