@@ -28,7 +28,7 @@ public class Customer extends User {
         return newBooking;
     }
 
-    // Other methods remain the same
+
     public String checkStatus(Booking booking) {
         return booking.getStatus();
     }
