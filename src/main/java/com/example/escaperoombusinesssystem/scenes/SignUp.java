@@ -56,19 +56,6 @@ public class SignUp {
 
     public void initActions(){
         signUpButton.setOnAction(e->{
-            try {
-                Connection con = DBConnector.connect();
-                String query = "INSERT INTO users (username, password) VALUES (?,?)";
-                PreparedStatement statement = con.prepareStatement(query);
-                statement.setString(1, usernameTextField.getText());
-                statement.setString(2, passwordTextField.getText());
-                int row = statement.executeUpdate();
-                if (row > 0) {
-                    System.out.println("Row inserted successfully");
-                }
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
 
         });
     }
