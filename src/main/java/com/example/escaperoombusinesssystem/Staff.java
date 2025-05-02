@@ -1,8 +1,8 @@
 package com.example.escaperoombusinesssystem;
 
 public class Staff extends User {
-    public Staff(String username) {
-        super(username, "com.example.escaperoombusinesssystem.Staff");
+    public Staff(String username , String plainTextPassword) {
+        super(username, "Staff" ,  plainTextPassword);
     }
 
     // public void accessDashboard(){}
