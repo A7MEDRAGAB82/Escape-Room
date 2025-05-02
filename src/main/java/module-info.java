@@ -4,6 +4,7 @@ module com.example.escaperoombusinesssystem {
     requires java.sql;
     requires io.github.cdimascio.dotenv.java;
     requires jbcrypt;
+    requires mysql.connector.j;
 
 
     opens com.example.escaperoombusinesssystem to javafx.fxml;

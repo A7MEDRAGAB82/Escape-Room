@@ -94,7 +94,7 @@ public class Admin extends User {
     }
 
     @Override
-    public void accessDashboard(Stage stage) {
+    public void accessDashboard() {
 
     }
 }

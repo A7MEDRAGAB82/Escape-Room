@@ -8,7 +8,7 @@ public class Staff extends User {
     }
 
     @Override
-    public void accessDashboard(Stage stage) {
+    public void accessDashboard() {
 
     }
 
