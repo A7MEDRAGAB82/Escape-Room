@@ -63,4 +63,8 @@ public class Booking {
     }
 
 
+    public boolean isActive() {
+        return !this.status.equals(CANCELLED);
+    }
+
 }
