@@ -11,6 +11,7 @@ public class Report {
 
     public Report(Map<String, Object> data) {
         this.reportId = "RPT-" + System.currentTimeMillis();
+        addData("Report ID : " , reportId);
         this.data = data;
         this.generatedDate = LocalDate.now();
     }
