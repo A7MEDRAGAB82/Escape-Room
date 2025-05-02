@@ -12,10 +12,13 @@
 .sceneTitle {
     -fx-font-size: xx-large;
     -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
 }
 
 .label {
     -fx-text-fill: white;
+    -fx-max-width: 200px;
 
 }
 .button {
@@ -23,8 +26,10 @@
     -fx-border-radius: 50px;
     -fx-text-fill: white;
     -fx-padding: 8px 12px;
+    -fx-max-width: 200px;
 }
 
-.signUoGrid {
-    -fx-background-color: #ffeeee;
+.signUpGrid {
+
+    -fx-max-width: 200px;
 }
