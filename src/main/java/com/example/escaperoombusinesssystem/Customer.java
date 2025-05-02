@@ -1,18 +1,44 @@
 package com.example.escaperoombusinesssystem;
 
+import java.time.LocalDateTime;
+
 public class Customer extends User {
-    public Customer(String username , String plainTextPassword) {
-        super(username, "Customer" ,  plainTextPassword);
+
+    public Customer(String username, String password) {
+        super(username, "Customer", password);
+    }
+
+    // Check room availability directly through EscapeRoom
+    public boolean isRoomAvailable(EscapeRoom room, LocalDateTime dateTime) {
+        for (Booking booking : room.getBookings()) {
+            if (booking.getDateTime().equals(dateTime) && booking.isActive()) {
+                return false; // Room is booked at this time
+            }
+        }
+        return true; // Time slot available
+    }
+
+    // Book a room (automatically adds to EscapeRoom's bookings)
+    public Booking makeBooking(EscapeRoom room, LocalDateTime dateTime, int players) {
+        if (!isRoomAvailable(room, dateTime)) {
+            throw new RuntimeException("Room not available at " + dateTime);
+        }
+        Booking newBooking = new Booking(room, dateTime, players);
+        room.addBooking(newBooking); // Auto-registers with the room
+        return newBooking;
+    }
+
+    // Other methods remain the same
+    public String checkStatus(Booking booking) {
+        return booking.getStatus();
+    }
+
+    public void cancelBooking(Booking booking) {
+        booking.cancel();
     }
 
     @Override
     public void accessDashboard() {
-
+        System.out.println("Customer Dashboard: Book/Cancel Rooms");
     }
-
-
-    // public com.example.escaperoombusinesssystem.Booking makeBooking(com.example.escaperoombusinesssystem.EscapeRoom room, LocalDateTime dateTime, int players) throws exception{}
-    // public String viewProgress(com.example.escaperoombusinesssystem.Booking booking)
-
-
 }
