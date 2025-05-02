@@ -33,6 +33,5 @@ public abstract class User {
     public String getRole() {
         return role;
     }
-
-    public abstract void accessDashboard(Stage stage);
+    public abstract void accessDashboard();
 }

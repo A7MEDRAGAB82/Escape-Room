@@ -63,7 +63,7 @@ public class Login {
             } else {
                 // TODO: implement db query here
                 EscapeRoomApp.currentUser = new Admin("Baraa","1234");
-                EscapeRoomApp.currentUser.accessDashboard(stage);
+                EscapeRoomApp.currentUser.accessDashboard();
                 EscapeRoomApp.isLoggedIn = true;
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setContentText("Logged in Successfully");
