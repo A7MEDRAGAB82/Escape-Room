@@ -2,9 +2,11 @@ package com.example.escaperoombusinesssystem.scenes;
 
 
 import com.example.escaperoombusinesssystem.DBConnector;
+import com.example.escaperoombusinesssystem.EscapeRoomApp;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -52,18 +54,19 @@ public class Login {
 
     public void initActions(){
         loginButton.setOnAction(e->{
-            try {
-                Connection con = DBConnector.connect();
-                String query = "INSERT INTO users (username, password) VALUES (?,?)";
-                PreparedStatement statement = con.prepareStatement(query);
-                statement.setString(1, usernameTextField.getText());
-                statement.setString(2, passwordTextField.getText());
-                int row = statement.executeUpdate();
-                if (row > 0) {
-                    System.out.println("Row inserted successfully");
-                }
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
+            if (usernameTextField.getText().isEmpty() || passwordTextField.getText().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("Please fill all the fields");
+                alert.showAndWait();
+            } else {
+                // TODO: implement db query here
+                EscapeRoomApp.isLoggedIn = true;
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("Logged in Successfully");
+                alert.setTitle("Success");
+                alert.showAndWait();
+                stage.setScene((new Login(stage)).getScene());
             }
 
         });

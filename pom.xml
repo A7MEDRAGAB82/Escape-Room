@@ -82,7 +82,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.example.escaperoombusinesssystem/com.example.escaperoombusinesssystem.HelloApplication
+                                com.example.escaperoombusinesssystem/com.example.escaperoombusinesssystem.EscapeRoomApp
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

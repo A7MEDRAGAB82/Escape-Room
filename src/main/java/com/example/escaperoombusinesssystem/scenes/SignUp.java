@@ -1,29 +1,24 @@
 package com.example.escaperoombusinesssystem.scenes;
 
-import com.example.escaperoombusinesssystem.DBConnector;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.effect.BlendMode;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 public class SignUp {
+    // declare all scene components
     Stage stage;
     Label sceneTitle;
     Label usernameLabel, passwordLabel, confirmPasswordLabel;
-    TextField usernameTextField, passwordTextField, confirmPasswordTextField;
+    TextField usernameTextField;
+    PasswordField passwordTextField, confirmPasswordTextField;
     Button signUpButton, signInButton;
     GridPane signUpGrid;
 
@@ -40,8 +35,8 @@ public class SignUp {
         passwordLabel = new Label("Password: ");
         confirmPasswordLabel = new Label("Confirm Password: ");
         usernameTextField = new TextField();
-        passwordTextField = new TextField();
-        confirmPasswordTextField = new TextField();
+        passwordTextField = new PasswordField();
+        confirmPasswordTextField = new PasswordField();
         signUpButton = new Button("Sign Up");
         signInButton = new Button("Sign In");
         signUpGrid = new GridPane();
@@ -55,8 +50,31 @@ public class SignUp {
     }
 
     public void initActions(){
-        signUpButton.setOnAction(e->{
 
+        signUpButton.setOnAction(e->{
+            if (usernameTextField.getText().isEmpty() || passwordTextField.getText().isEmpty() || confirmPasswordTextField.getText().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Please fill all the fields");
+                alert.setTitle("Error");
+                alert.showAndWait();
+            } else if (!passwordTextField.getText().equals(confirmPasswordTextField.getText())) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Passwords do not match");
+                alert.setTitle("Error");
+                alert.showAndWait();
+            } else {
+                // TODO: implement db query here
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("Signed Up Successfully");
+                alert.setTitle("Success");
+                alert.showAndWait();
+                stage.setScene((new Login(stage)).getScene());
+            }
+        });
+
+
+        signInButton.setOnAction(e->{
+           stage.setScene((new Login(stage)).getScene());
         });
     }
 
