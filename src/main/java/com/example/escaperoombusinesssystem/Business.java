@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Business {
     private String name;
-    private ArrayList<EscapeRoom> rooms;
+    private static ArrayList<EscapeRoom> rooms;
 
 
     public Business(String name) {
@@ -18,7 +18,7 @@ public class Business {
      * Adds a new escape room to the business
      * @throws Exception if room already exists
      */
-    public void addRoom(EscapeRoom room) throws Exception { //throws means "I might throw this type of exception - be ready to handle it!"
+    public static void addRoom(EscapeRoom room) throws Exception { //throws means "I might throw this type of exception - be ready to handle it!"
         if (rooms.contains(room)) { //contains is a method in arraylist
             throw new Exception("Room '" + room.getName() + "' already exists!");
         }
@@ -48,7 +48,7 @@ public class Business {
         return name;
     }
 
-    public ArrayList<EscapeRoom> getRooms() {
+    public static ArrayList<EscapeRoom> getRooms() {
         return new ArrayList<>(rooms); // Returns a copy to prevent external modification
     }
 

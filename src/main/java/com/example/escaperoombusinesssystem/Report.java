@@ -10,7 +10,8 @@ public class Report {
     private LocalDate generatedDate;
 
     public Report(Map<String, Object> data) {
-        this.reportId = "RPT-" + System.currentTimeMillis();
+        this.reportId = "Report" + System.currentTimeMillis();
+        addData("Report ID : " , reportId);
         this.data = data;
         this.generatedDate = LocalDate.now();
     }

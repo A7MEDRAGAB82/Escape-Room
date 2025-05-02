@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import static com.example.escaperoombusinesssystem.BookingStatus.CANCELLED;
+import static com.example.escaperoombusinesssystem.BookingStatus.CONFIRMED;
+
 public class Booking {
     private String bookingId;
     private EscapeRoom room;
@@ -36,7 +39,7 @@ public class Booking {
            this.players = new ArrayList<>(players);
        }
 
-      this.status = "Completed";
+      this.status = CONFIRMED;
     }
 
     public void addPlayer(Player player) {
@@ -56,7 +59,7 @@ public class Booking {
     }
 
     public void cancel() {
-        this.status = "Canceled";
+        this.status = CANCELLED;
     }
 
 
