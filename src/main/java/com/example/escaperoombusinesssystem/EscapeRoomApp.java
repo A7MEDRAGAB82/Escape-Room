@@ -12,6 +12,7 @@ import java.util.Objects;
 
 public class EscapeRoomApp extends Application {
     public static boolean isLoggedIn = false;
+    public static User currentUser = null;
 
     @Override
     public void start(Stage stage) throws IOException {

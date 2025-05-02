@@ -1,4 +1,6 @@
 package com.example.escaperoombusinesssystem;
+import javafx.stage.Stage;
+
 import java.util.*;
 
 import static com.example.escaperoombusinesssystem.BookingStatus.CANCELLED;
@@ -92,7 +94,7 @@ public class Admin extends User {
     }
 
     @Override
-    public void accessDashboard() {
+    public void accessDashboard(Stage stage) {
 
     }
 }

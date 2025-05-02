@@ -1,5 +1,6 @@
 package com.example.escaperoombusinesssystem;
 
+import javafx.stage.Stage;
 import org.mindrot.jbcrypt.BCrypt;
 
 public abstract class User {
@@ -33,5 +34,5 @@ public abstract class User {
         return role;
     }
 
-    public abstract void accessDashboard();
+    public abstract void accessDashboard(Stage stage);
 }

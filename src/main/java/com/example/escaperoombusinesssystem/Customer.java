@@ -1,12 +1,14 @@
 package com.example.escaperoombusinesssystem;
 
+import javafx.stage.Stage;
+
 public class Customer extends User {
     public Customer(String username , String plainTextPassword) {
         super(username, "Customer" ,  plainTextPassword);
     }
 
     @Override
-    public void accessDashboard() {
+    public void accessDashboard(Stage stage) {
 
     }
 

@@ -1,6 +1,7 @@
 package com.example.escaperoombusinesssystem.scenes;
 
 
+import com.example.escaperoombusinesssystem.Admin;
 import com.example.escaperoombusinesssystem.DBConnector;
 import com.example.escaperoombusinesssystem.EscapeRoomApp;
 import javafx.geometry.Insets;
@@ -61,6 +62,8 @@ public class Login {
                 alert.showAndWait();
             } else {
                 // TODO: implement db query here
+                EscapeRoomApp.currentUser = new Admin("Baraa","1234");
+                EscapeRoomApp.currentUser.accessDashboard(stage);
                 EscapeRoomApp.isLoggedIn = true;
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setContentText("Logged in Successfully");
