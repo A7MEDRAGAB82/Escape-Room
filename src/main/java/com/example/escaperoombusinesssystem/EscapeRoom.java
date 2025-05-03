@@ -65,4 +65,7 @@ return clues;
         return isActive;
     }
 
+    public String getId() {
+        return id;
+    }
 }
