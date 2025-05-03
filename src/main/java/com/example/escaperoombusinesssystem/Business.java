@@ -18,7 +18,7 @@ public class Business {
      * Adds a new escape room to the business
      * @throws Exception if room already exists
      */
-    public static void addRoom(EscapeRoom room) throws Exception { //throws means "I might throw this type of exception - be ready to handle it!"
+    public static void addRoom(EscapeRoom room) throws Exception {
         if (rooms.contains(room)) { //contains is a method in arraylist
             throw new Exception("Room '" + room.getName() + "' already exists!");
         }
@@ -26,21 +26,50 @@ public class Business {
     }
 
     /**
-     * Searches rooms by name (case-insensitive partial match)
-     * @return List of matching rooms
+     * Searches for a room by its unique ID (exact match, case-sensitive).
+     * Uses binary search for O(log n) efficiency.
+     * @return The found room, or null if not found.
      */
-    public ArrayList<EscapeRoom> searchRooms(String query) {
-        ArrayList<EscapeRoom> results = new ArrayList<>(); //result for searching
-        String lowerQuery = query.toLowerCase(); //converting to lower case to prevent search conflict
-/*
-* "Pirate".equals("pirate")  // → false
-"Pirate".contains("pir")   // → false (because 'P' vs 'p') */
-        for (EscapeRoom room : rooms) {
-            if (room.getName().toLowerCase().contains(lowerQuery)) {
-                results.add(room); //result for searching
+    // selection sort and binary search for learning purpose
+    public EscapeRoom searchRoomById(String id) {
+        // Ensure rooms are sorted by ID first
+        selectionSortRoomsById(rooms);
+
+        int left = 0;
+        int right = rooms.size() - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            String currentId = rooms.get(mid).getId();
+            int comparison = currentId.compareTo(id);
+
+            if (comparison == 0) {
+                return rooms.get(mid); // Exact match found
+            } else if (comparison < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
             }
         }
-        return results;
+        return null; // Not found
+    }
+
+    /**
+     * Helper: Selection Sort to sort rooms by ID.
+     */
+    private void selectionSortRoomsById(ArrayList<EscapeRoom> rooms) {
+        for (int i = 0; i < rooms.size() - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < rooms.size(); j++) {
+                if (rooms.get(j).getId().compareTo(rooms.get(minIndex).getId()) < 0) {
+                    minIndex = j;
+                }
+            }
+            // Swap
+            EscapeRoom temp = rooms.get(minIndex);
+            rooms.set(minIndex, rooms.get(i));
+            rooms.set(i, temp);
+        }
     }
 
 

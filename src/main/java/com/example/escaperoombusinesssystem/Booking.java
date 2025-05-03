@@ -63,8 +63,16 @@ public class Booking {
         return room;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public String getStatus() {
         return status;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
     }
 
     public void cancel() {
