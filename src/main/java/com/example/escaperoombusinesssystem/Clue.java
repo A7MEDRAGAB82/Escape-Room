@@ -27,9 +27,22 @@ public class Clue implements Solvable {
 public String getHint(){
         return "The Mirror shows us nothing more or less than the deepest, most desperate desire of our hearts\n";
 }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setSolution(String solution) {
+        this.solution = solution;
+    }
+
 public void solve(){
         solved=true;
 }
+
+    public void unsolve() {
+        this.solved = false;
+    }
 
     public String getDescription() {
         return description;
