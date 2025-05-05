@@ -29,7 +29,7 @@ public class Admin extends User {
            if (room.getBookings() == null) continue; // Skip null bookings
            totalBookings += room.getBookings().size();
            for (Booking booking : room.getBookings()) {
-               String status = booking.getStatus();
+               BookingStatus status = booking.getStatus();
                if (CONFIRMED.equals(status)) {
                    confirmedBookings++;
                } else if (CANCELLED.equals(status)) {
