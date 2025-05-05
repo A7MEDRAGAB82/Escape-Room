@@ -12,7 +12,7 @@ public class Booking {
     private EscapeRoom room;
     private LocalDateTime dateTime;
     private ArrayList <Player> players;
-    private String status;
+    private BookingStatus status;
     private static final LocalTime opening = LocalTime.of(10, 0);
     private static final LocalTime closing = LocalTime.of(22, 0);
 
@@ -48,7 +48,7 @@ public class Booking {
             throw new IllegalStateException("Room is already booked and active");
         }
 
-        this.status = CONFIRMED;
+        this.status = BookingStatus.CONFIRMED;
     }
 
     public void addPlayer(Player player) {
@@ -63,11 +63,11 @@ public class Booking {
         return room;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(BookingStatus status) {
         this.status = status;
     }
 
-    public String getStatus() {
+    public BookingStatus getStatus() {
         return status;
     }
 
@@ -76,12 +76,12 @@ public class Booking {
     }
 
     public void cancel() {
-        this.status = CANCELLED;
+        this.status = BookingStatus.CANCELLED;
     }
 
 
     public boolean isActive() {
-        return !this.status.equals(CANCELLED);
+        return this.status != BookingStatus.CANCELLED;
     }
 
 }

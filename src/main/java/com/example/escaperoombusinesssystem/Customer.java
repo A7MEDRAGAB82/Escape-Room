@@ -29,7 +29,7 @@ public class Customer extends User {
     }
 
 
-    public String checkStatus(Booking booking) {
+    public BookingStatus checkStatus(Booking booking) {
         return booking.getStatus();
     }
 
