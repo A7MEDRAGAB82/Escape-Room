@@ -2,6 +2,8 @@ package com.example.escaperoombusinesssystem;
 
 import java.time.LocalDateTime;
 
+import static com.example.escaperoombusinesssystem.BookingStatus.CONFIRMED;
+
 public class Staff extends User {
     public Staff(String username , String plainTextPassword) {
         super(username, "Staff" ,  plainTextPassword);
@@ -36,7 +38,7 @@ public class Staff extends User {
 
                 // Mark old bookings as done
                 if (booking.getDateTime().isBefore(LocalDateTime.now())) {
-                    booking.setStatus("COMPLETED");
+                    booking.setStatus(CONFIRMED);
                 }
             }
 
