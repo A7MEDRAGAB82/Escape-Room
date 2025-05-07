@@ -1,4 +1,4 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model;
 
 public interface Solvable {
     boolean isSolved();

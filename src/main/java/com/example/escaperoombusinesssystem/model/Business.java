@@ -1,4 +1,4 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model;
 
 import java.util.ArrayList;
 

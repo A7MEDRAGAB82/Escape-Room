@@ -1,4 +1,4 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model;
 
 import java.util.*;
 
@@ -27,7 +27,7 @@ public class EscapeRoom {
 
    public void addClue(Clue clue){
        if (clue == null) {
-           throw new IllegalArgumentException("com.example.escaperoombusinesssystem.Clue cannot be null");
+           throw new IllegalArgumentException("com.example.escaperoombusinesssystem.model.Clue cannot be null");
        }
 this.clues.addLast(clue);
     }

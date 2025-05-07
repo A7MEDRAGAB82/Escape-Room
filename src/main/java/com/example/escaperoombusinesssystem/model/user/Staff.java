@@ -1,8 +1,13 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model.user;
+
+import com.example.escaperoombusinesssystem.model.Booking;
+import com.example.escaperoombusinesssystem.model.Clue;
+import com.example.escaperoombusinesssystem.model.EscapeRoom;
+import com.example.escaperoombusinesssystem.model.Player;
 
 import java.time.LocalDateTime;
 
-import static com.example.escaperoombusinesssystem.BookingStatus.CONFIRMED;
+import static com.example.escaperoombusinesssystem.model.BookingStatus.CONFIRMED;
 
 public class Staff extends User {
     public Staff(String username , String plainTextPassword) {
