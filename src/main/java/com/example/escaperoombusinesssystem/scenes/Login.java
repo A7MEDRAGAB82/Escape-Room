@@ -1,9 +1,8 @@
 package com.example.escaperoombusinesssystem.scenes;
 
 
-import com.example.escaperoombusinesssystem.Admin;
-import com.example.escaperoombusinesssystem.DBConnector;
-import com.example.escaperoombusinesssystem.EscapeRoomApp;
+import com.example.escaperoombusinesssystem.model.user.Admin;
+import com.example.escaperoombusinesssystem.App;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,9 +16,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 public class Login {
     Stage stage;
@@ -62,9 +58,6 @@ public class Login {
                 alert.showAndWait();
             } else {
                 // TODO: implement db query here
-                EscapeRoomApp.currentUser = new Admin("Baraa","1234");
-                EscapeRoomApp.currentUser.accessDashboard();
-                EscapeRoomApp.isLoggedIn = true;
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setContentText("Logged in Successfully");
                 alert.setTitle("Success");
@@ -87,7 +80,7 @@ public class Login {
         container.setPadding(new Insets(10,10,10,10));
         container.setAlignment(Pos.CENTER);
         Scene signUpScene =  new Scene(container,700,550);
-        signUpScene.getStylesheets().add(getClass().getResource("main.css").toExternalForm());
+        signUpScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         return signUpScene;
     }
 }

@@ -90,7 +90,7 @@ public class SignUp {
         container.setPadding(new Insets(10,10,10,10));
         container.setAlignment(Pos.CENTER);
         Scene signUpScene =  new Scene(container,700,550);
-        signUpScene.getStylesheets().add(getClass().getResource("main.css").toExternalForm());
+        signUpScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         return signUpScene;
     }
 }

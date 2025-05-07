@@ -1,11 +1,8 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-
-import static com.example.escaperoombusinesssystem.BookingStatus.CANCELLED;
-import static com.example.escaperoombusinesssystem.BookingStatus.CONFIRMED;
 
 public class Booking {
     private String bookingId;

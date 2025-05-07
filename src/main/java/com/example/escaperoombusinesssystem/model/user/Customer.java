@@ -1,4 +1,8 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model.user;
+
+import com.example.escaperoombusinesssystem.model.Booking;
+import com.example.escaperoombusinesssystem.model.BookingStatus;
+import com.example.escaperoombusinesssystem.model.EscapeRoom;
 
 import java.time.LocalDateTime;
 

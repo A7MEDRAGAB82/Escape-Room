@@ -1,6 +1,5 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model.user;
 
-import javafx.stage.Stage;
 import org.mindrot.jbcrypt.BCrypt;
 
 public abstract class User {

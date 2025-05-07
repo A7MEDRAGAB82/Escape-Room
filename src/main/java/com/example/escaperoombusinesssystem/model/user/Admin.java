@@ -1,10 +1,10 @@
-package com.example.escaperoombusinesssystem;
-import javafx.stage.Stage;
+package com.example.escaperoombusinesssystem.model.user;
+import com.example.escaperoombusinesssystem.model.*;
 
 import java.util.*;
 
-import static com.example.escaperoombusinesssystem.BookingStatus.CANCELLED;
-import static com.example.escaperoombusinesssystem.BookingStatus.CONFIRMED;
+import static com.example.escaperoombusinesssystem.model.BookingStatus.CANCELLED;
+import static com.example.escaperoombusinesssystem.model.BookingStatus.CONFIRMED;
 
 public class Admin extends User {
 

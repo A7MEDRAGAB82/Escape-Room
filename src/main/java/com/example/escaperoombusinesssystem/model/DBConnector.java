@@ -1,4 +1,4 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model;
 
 // Import external libraries/classes needed for this file
 import io.github.cdimascio.dotenv.Dotenv;  // For loading .env files
