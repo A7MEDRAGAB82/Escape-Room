@@ -14,9 +14,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class LoginController {
 
@@ -88,12 +85,11 @@ public class LoginController {
 
     private User authenticateUser(String username, String password) {
         // In a real application, this would check against a database
-        // For simplicity, we'll use some hardcoded users
-
-        // Normally, you would use the DBConnector to fetch from database:
+        // TODO : use database to see if user exist, if exist it will proceed
+        // TODO : Create user object if it exits and return it as bellow
         // return dbConnector.getUser(username, password);
 
-        // Mock users for development/testing
+        // only demo , delete after db addition
         if (username.equals("admin") && password.equals("admin123")) {
             System.out.println("Admin logged in");
             return new Admin(username, password);
@@ -103,20 +99,17 @@ public class LoginController {
             return new Customer(username, password);
         }
 
-        return null; // Authentication failed
+        return null;
     }
 
     private String getDashboardPathForRole(String role) {
-        switch (role.toLowerCase()) {
-            case "admin":
-                return "/com/example/escaperoombusinesssystem/view/adminDashboard.fxml";
-            case "staff":
-                return "/com/example/escaperoombusinesssystem/view/staffDashboard.fxml";
-            case "customer":
-                return "/com/example/escaperoombusinesssystem/view/CustomerDashboard.fxml";
-            default:
-                return "/com/example/escaperoombusinesssystem/view/LoginView.fxml";
-        }
+        //
+        return switch (role.toLowerCase()) {
+            case "admin" -> "/com/example/escaperoombusinesssystem/view/adminDashboard.fxml";
+            case "staff" -> "/com/example/escaperoombusinesssystem/view/staffDashboard.fxml";
+            case "customer" -> "/com/example/escaperoombusinesssystem/view/CustomerDashboard.fxml";
+            default -> "/com/example/escaperoombusinesssystem/view/LoginView.fxml";
+        };
     }
 
     private void passUserToController(Object controller, User user) {
