@@ -14,6 +14,9 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class LoginController {
 
@@ -46,21 +49,23 @@ public class LoginController {
 
         // Validate input
         if (username.isEmpty() || password.isEmpty()) {
-            errorMessageLabel.setText("Please enter both username and password.");
+//            errorMessageLabel.setText("Please enter both username and password.");
             return;
         }
+        System.out.println("first check");
         // Try to authenticate user
         User user = authenticateUser(username, password);
+        System.out.println(user.getRole());
 
         if (user != null) {
             try {
                 // Load appropriate dashboard based on user role
                 String dashboardPath = getDashboardPathForRole(user.getRole());
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(dashboardPath));
-                System.out.println(dashboardPath);
-                Parent root = loader.load();
 
-                // Pass the user object to the controller
+                Parent root = FXMLLoader.load(getClass().getResource(dashboardPath));
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(dashboardPath));
+
                 Object controller = loader.getController();
                 if (controller != null) {
                     passUserToController(controller, user);
@@ -74,10 +79,10 @@ public class LoginController {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                errorMessageLabel.setText("Error loading dashboard. Please try again.");
+//                errorMessageLabel.setText("Error loading dashboard. Please try again.");
             }
         } else {
-            errorMessageLabel.setText("Invalid username or password. Please try again.");
+//            errorMessageLabel.setText("Invalid username or password. Please try again.");
         }
     }
 
@@ -104,13 +109,13 @@ public class LoginController {
     private String getDashboardPathForRole(String role) {
         switch (role.toLowerCase()) {
             case "admin":
-                return "view/adminDashboard.fxml";
+                return "/com/example/escaperoombusinesssystem/view/adminDashboard.fxml";
             case "staff":
-                return "/com/escaperoombooking/view/StaffDashboard.fxml";
+                return "/com/example/escaperoombusinesssystem/view/staffDashboard.fxml";
             case "customer":
-                return "/com/escaperoombooking/view/CustomerDashboard.fxml";
+                return "/com/example/escaperoombusinesssystem/view/CustomerDashboard.fxml";
             default:
-                return "/com/escaperoombooking/view/LoginView.fxml"; // Fallback
+                return "/com/example/escaperoombusinesssystem/view/LoginView.fxml";
         }
     }
 
