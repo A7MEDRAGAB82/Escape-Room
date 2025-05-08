@@ -85,8 +85,9 @@ public class AdminController implements Initializable {
     private ObservableList<EscapeRoom> roomData = FXCollections.observableArrayList();
     private ObservableList<Booking> bookingData = FXCollections.observableArrayList();
     private ObservableList<Player> playerData = FXCollections.observableArrayList();
-    private User currentUser;
     private Map<Player, EscapeRoom> playerRoomMap = new HashMap<>();
+
+    private User currentUser;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -466,12 +467,14 @@ public class AdminController implements Initializable {
             } else {
                 String newId = String.valueOf(roomData.size() + 1);
                 EscapeRoom newRoom = new EscapeRoom(newId, roomName, 3, 6); // Default difficulty 3, max players 6
+            // TODO : add room to database
                 roomData.add(newRoom);
                 showAlert("Success", "Room '" + roomName + "' added successfully");
             }
         });
     }
 
+    // TODO : delete edit room methon ( not required )
     private void editRoom(EscapeRoom room) {
         TextInputDialog dialog = new TextInputDialog(room.getName());
         dialog.setTitle("Edit Room");
@@ -511,6 +514,7 @@ public class AdminController implements Initializable {
                 } else {
                     User newUser = createUserByRole(username, "default123", role);
                     userData.add(newUser);
+                    // TODO : add user to db
                     showAlert("Success", role + " user '" + username + "' added successfully");
                 }
             });
@@ -551,6 +555,7 @@ public class AdminController implements Initializable {
         showAlert("Success", "Booking #" + booking.getBookingId() + " confirmed");
     }
 
+    // TODO : remove reset password
     private void resetUserPassword(User user) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Reset Password");

@@ -1,7 +1,5 @@
 package com.example.escaperoombusinesssystem;
 
-import com.example.escaperoombusinesssystem.model.user.User;
-import com.example.escaperoombusinesssystem.scenes.SignUp;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

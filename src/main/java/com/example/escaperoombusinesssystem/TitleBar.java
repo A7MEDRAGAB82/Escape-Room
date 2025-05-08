@@ -1,4 +1,4 @@
-package com.example.escaperoombusinesssystem.scenes;
+package com.example.escaperoombusinesssystem;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
