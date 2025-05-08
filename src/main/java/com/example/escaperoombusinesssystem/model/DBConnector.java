@@ -1,18 +1,13 @@
 package com.example.escaperoombusinesssystem.model;
 
-// Import external libraries/classes needed for this file
-import io.github.cdimascio.dotenv.Dotenv;  // For loading .env files
-import java.sql.Connection;               // JDBC interface for database connections
-import java.sql.DriverManager;           // JDBC class for managing database drivers
+import io.github.cdimascio.dotenv.Dotenv;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
-/**
- * A utility class to establish and return a database connection.
- * Uses environment variables for secure credential management.
- */
 public class DBConnector {
 
     /**
-     * Establishes a connection to the database using credentials from .env file.
+     * Establishes a connection to Supabase PostgreSQL database
      *
      * @return Connection object if successful, null if connection fails
      */
@@ -20,26 +15,26 @@ public class DBConnector {
         // Load environment variables from .env file
         Dotenv dotenv = Dotenv.load();
 
-        // Retrieve database credentials from environment variables
-        String url = dotenv.get("DB_URL");       // Database connection URL (e.g., jdbc:mysql://...)
-        String user = dotenv.get("DB_USER");     // Database username
-        String password = dotenv.get("DB_PASSWORD"); // Database password
+        // Supabase-specific connection parameters
+        String url = dotenv.get("SUPABASE_DB_URL"); // Format: "jdbc:postgresql://db.[project-ref].supabase.co:5432/postgres"
+        String user = dotenv.get("SUPABASE_DB_USER"); // Typically "postgres"
+        String password = dotenv.get("SUPABASE_DB_PASSWORD");
 
         // Initialize connection variable
         Connection con = null;
 
         try {
-            // Attempt to establish a connection using DriverManager
+            // Load PostgreSQL JDBC driver
+            Class.forName("org.postgresql.Driver");
+
+            // Attempt to establish a connection
             con = DriverManager.getConnection(url, user, password);
-            // Success message (consider using a logger in production)
-            System.out.println("Connected to the database successfully");
-        }
-        catch(Exception e) {
-            // Print error message if connection fails (e.g., wrong credentials, DB offline)
-            System.out.println(e.getMessage());
+            System.out.println("Connected to Supabase successfully");
+        } catch(Exception e) {
+            System.err.println("Error connecting to Supabase: " + e.getMessage());
+            e.printStackTrace();
         }
 
-        // Return the connection object (may be null if failed)
         return con;
     }
 }
