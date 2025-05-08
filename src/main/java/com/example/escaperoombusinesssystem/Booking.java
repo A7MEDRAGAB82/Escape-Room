@@ -29,17 +29,21 @@ public class Booking {
         if (bookingTime.isBefore(opening) || bookingTime.isAfter(closing)) {
             throw new IllegalArgumentException("Working hours are from 10 AM to 10 PM");
         }
-        else {
-            this.dateTime = dateTime;
+
+        for (Booking i : room.getBookings()) {
+            if (dateTime.equals(i.getDateTime())) {
+                throw new IllegalArgumentException("This room is already booked at this date and time, please choose another time or room.");
+            }
         }
 
+        this.dateTime = dateTime;
+
         // Validate players (existing checks)
-        if (players > 5 || players < 2) {
-            throw new IllegalArgumentException("Players must be at least 2 and at most 5");
+        if (players > room.getMaxPlayers() || players < 2) {
+            throw new IllegalArgumentException("Players must be at least 2 and at most "+room.getMaxPlayers());
         }
-        else {
-            this.players = new ArrayList<>(players);
-        }
+        this.players = new ArrayList<>(players);
+        
 
         this.room = room;
 
@@ -52,7 +56,12 @@ public class Booking {
     }
 
     public void addPlayer(Player player) {
-        players.add(player);
+        if (players.size() >= room.getMaxPlayers()) {
+            throw new IllegalStateException("Cannot add more players, Maximum limit of room is: " + room.getMaxPlayers());
+        }
+        else {
+            players.add(player);
+        }
     }
 
     public LocalDateTime getDateTime() {
