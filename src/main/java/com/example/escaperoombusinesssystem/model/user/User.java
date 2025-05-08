@@ -33,4 +33,8 @@ public abstract class User {
         return role;
     }
     public abstract void accessDashboard();
+
+    public void setPassword(String newPassword) {
+        this.hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+    }
 }

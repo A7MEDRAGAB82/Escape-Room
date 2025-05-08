@@ -81,4 +81,11 @@ public class Booking {
         return this.status != BookingStatus.CANCELLED;
     }
 
+    public String getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
+    }
 }

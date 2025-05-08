@@ -11,7 +11,7 @@ public class EscapeRoom {
     private List<Booking> bookings = new ArrayList<>();
     private boolean isActive = true; // Default to active
 
-    EscapeRoom(String id ,String name,int difficulty,int maxPlayers){
+    public EscapeRoom(String id, String name, int difficulty, int maxPlayers){
         if (id == null || name == null) {
             throw new IllegalArgumentException("ID and name cannot be null");
         }
@@ -60,6 +60,9 @@ return clues;
     public void deactivate() {
         this.isActive = false;
     }
+    public void toggleIsActive() {
+        this.isActive = !isActive;
+    }
 
     public boolean isActive() {
         return isActive;
@@ -67,5 +70,9 @@ return clues;
 
     public String getId() {
         return id;
+    }
+
+    public void setName(String roomName) {
+        this.name = roomName;
     }
 }
