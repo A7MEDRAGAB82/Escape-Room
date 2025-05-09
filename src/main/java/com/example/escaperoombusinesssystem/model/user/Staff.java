@@ -1,8 +1,13 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model.user;
+
+import com.example.escaperoombusinesssystem.model.Booking;
+import com.example.escaperoombusinesssystem.model.Clue;
+import com.example.escaperoombusinesssystem.model.EscapeRoom;
+import com.example.escaperoombusinesssystem.model.Player;
 
 import java.time.LocalDateTime;
 
-import static com.example.escaperoombusinesssystem.BookingStatus.CONFIRMED;
+import static com.example.escaperoombusinesssystem.model.BookingStatus.CONFIRMED;
 
 public class Staff extends User {
     public Staff(String username , String plainTextPassword) {
@@ -21,6 +26,7 @@ public class Staff extends User {
          * 3. Marking past bookings as completed
          */
         public void resetRoom(EscapeRoom room) {
+            // TODO: Update room, clues, and player progress in the database after reset
             if (room == null) {
                 throw new IllegalArgumentException("Room is missing");
             }
@@ -52,6 +58,7 @@ public class Staff extends User {
  * @param newSolution The new solution text
  */
 public void updateClue(Clue clue, String newDescription, String newSolution) {
+    // TODO: Update clue details in the database
     if (clue == null) {
         throw new IllegalArgumentException("Clue cannot be null");
     }
