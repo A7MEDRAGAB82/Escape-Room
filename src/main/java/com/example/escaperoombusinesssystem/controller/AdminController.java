@@ -23,6 +23,9 @@ import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -94,7 +97,6 @@ public class AdminController implements Initializable {
         setupBookingTable();
         setupUserTable();
         setupPlayerTable();
-        loadSampleData();
     }
 
     public void setUser(User user) {
@@ -231,80 +233,6 @@ public class AdminController implements Initializable {
         playersTable.setItems(playerData);
     }
 
-    private void loadSampleData() {
-        // Sample Users
-        userData.addAll(
-                new Admin("admin1", "admin123"),
-                new Staff("staff1", "staff123"),
-                new Customer("customer1", "customer123"),
-                new Customer("john_doe", "password123"),
-                new Customer("jane_smith", "securepass")
-        );
-
-        // Sample Rooms
-        EscapeRoom hauntedMansion = new EscapeRoom("1", "Haunted Mansion", 5, 7);
-        EscapeRoom prisonBreak = new EscapeRoom("2", "Prison Break", 6, 6);
-        EscapeRoom spaceStation = new EscapeRoom("3", "Space Station", 4, 8);
-
-        roomData.addAll(hauntedMansion, prisonBreak, spaceStation);
-
-        // Sample Clues with solutions and types
-        Clue clue1 = new Clue("Look behind the painting",
-                "Key is taped behind the frame", "Physical");
-        Clue clue2 = new Clue("The combination is in the book",
-                "Page 42 has the code 7392", "Puzzle");
-        Clue clue3 = new Clue("Check under the desk",
-                "Magnetic key under left drawer", "Physical");
-        Clue clue4 = new Clue("The key is in the flower pot",
-                "False bottom in the red vase", "Hidden");
-        Clue clue5 = new Clue("Solve the riddle on the wall",
-                "Answer is 'time'", "Riddle");
-
-        // Mark some clues as solved
-        clue1.solve();
-        clue3.solve();
-
-        // Sample Players with clues
-        Player player1 = new Player("John Doe");
-        player1.addSolvedClue(clue1);
-        player1.addSolvedClue(clue2);
-
-        Player player2 = new Player("Jane Smith");
-        player2.addSolvedClue(clue3);
-
-        Player player3 = new Player("Mike Johnson");
-        player3.addSolvedClue(clue1);
-        player3.addSolvedClue(clue4);
-        player3.addSolvedClue(clue5);
-
-        Player player4 = new Player("Sarah Williams");
-
-        playerData.addAll(player1, player2, player3, player4);
-
-        // Map players to rooms
-        playerRoomMap.put(player1, hauntedMansion);
-        playerRoomMap.put(player2, hauntedMansion);
-        playerRoomMap.put(player3, prisonBreak);
-        playerRoomMap.put(player4, spaceStation);
-
-        // Sample Bookings
-        LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
-        LocalDateTime dayAfter = LocalDateTime.now().plusDays(2);
-
-//        Booking booking1 = new Booking(hauntedMansion, tomorrow.withHour(14).withMinute(0), 4);
-//        booking1.setBookingId("B001");
-//        booking1.addPlayer(player1);
-//        booking1.addPlayer(player2);
-//        booking1.setStatus(BookingStatus.CONFIRMED);
-
-//        Booking booking2 = new Booking(prisonBreak, dayAfter.withHour(18).withMinute(30), 6);
-//        booking2.setBookingId("B002");
-//        booking2.addPlayer(player3);
-//        booking2.addPlayer(player4);
-//        booking2.setStatus(BookingStatus.CONFIRMED);
-
-//        bookingData.addAll( booking2);
-    }
     // Navigation Methods
     @FXML
     private void showRooms() {
@@ -410,34 +338,6 @@ public class AdminController implements Initializable {
         });
     }
 
-    @FXML
-    private void handleAddUser() {
-        ChoiceDialog<String> roleDialog = new ChoiceDialog<>("Staff", "Admin", "Staff", "Customer");
-        roleDialog.setTitle("Add New User");
-        roleDialog.setHeaderText("Select user role");
-        roleDialog.setContentText("Role:");
-
-        Optional<String> roleResult = roleDialog.showAndWait();
-        roleResult.ifPresent(role -> {
-            TextInputDialog userDialog = new TextInputDialog();
-            userDialog.setTitle("Add New User");
-            userDialog.setHeaderText("Create a new " + role + " user");
-            userDialog.setContentText("Username:");
-
-            Optional<String> userResult = userDialog.showAndWait();
-            userResult.ifPresent(username -> {
-                if (username.trim().isEmpty()) {
-                    showAlert("Error", "Username cannot be empty");
-                } else {
-                    User newUser = createUserByRole(username, "default123", role);
-                    userData.add(newUser);
-                    // TODO : add user to db
-                    showAlert("Success", role + " user '" + username + "' added successfully");
-                }
-            });
-        });
-    }
-
     private User createUserByRole(String username, String password, String role) {
         switch (role.toLowerCase()) {
             case "admin":
@@ -498,10 +398,55 @@ public class AdminController implements Initializable {
 
     @FXML
     private void refreshTables() {
-        roomsTable.refresh();
-        usersTable.refresh();
-        bookingsTable.refresh();
-        playersTable.refresh();
+        try {
+            // Refresh users table
+            userData.clear();
+            Connection conn = DBConnector.connect();
+            String userSql = "SELECT username, role, password_hash FROM users";
+            try (PreparedStatement pst = conn.prepareStatement(userSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String username = rs.getString("username");
+                    String role = rs.getString("role");
+                    User user = createUserByRole(username, "dummy", role);
+                    userData.add(user);
+                }
+            }
+
+            // Refresh rooms table
+            roomData.clear();
+            String roomSql = "SELECT id, name, difficulty, max_players, is_active FROM rooms";
+            try (PreparedStatement pst = conn.prepareStatement(roomSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String id = rs.getString("id");
+                    String name = rs.getString("name");
+                    int difficulty = rs.getInt("difficulty");
+                    int maxPlayers = rs.getInt("max_players");
+                    boolean isActive = rs.getBoolean("is_active");
+                    
+                    EscapeRoom room = new EscapeRoom(id, name, difficulty, maxPlayers);
+                    if (!isActive) {
+                        room.deactivate();
+                    }
+                    roomData.add(room);
+                }
+            }
+
+            // Refresh bookings table
+            bookingData.clear();
+            for (EscapeRoom room : roomData) {
+                bookingData.addAll(room.getBookings());
+            }
+
+            // Refresh players table
+            playerData.clear();
+            for (Booking booking : bookingData) {
+                playerData.addAll(booking.getPlayers());
+            }
+        } catch (Exception e) {
+            showAlert("Error", "Failed to refresh data: " + e.getMessage());
+        }
     }
 
     // Helper Methods
@@ -647,5 +592,48 @@ public class AdminController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handleAddUser() {
+        ChoiceDialog<String> roleDialog = new ChoiceDialog<>("Staff", "Admin", "Staff", "Customer");
+        roleDialog.setTitle("Add New User");
+        roleDialog.setHeaderText("Select user role");
+        roleDialog.setContentText("Role:");
+
+        Optional<String> roleResult = roleDialog.showAndWait();
+        roleResult.ifPresent(role -> {
+            TextInputDialog userDialog = new TextInputDialog();
+            userDialog.setTitle("Add New User");
+            userDialog.setHeaderText("Create a new " + role + " user");
+            userDialog.setContentText("Username:");
+
+            Optional<String> userResult = userDialog.showAndWait();
+            userResult.ifPresent(username -> {
+                if (username.trim().isEmpty()) {
+                    showAlert("Error", "Username cannot be empty");
+                } else {
+                    User newUser = createUserByRole(username, "default123", role);
+                    try {
+                        // Save user to database
+                        Connection conn = DBConnector.connect();
+                        String sql = "INSERT INTO users (username, role, password_hash) VALUES (?, ?, ?) " +
+                                   "ON CONFLICT (username) DO UPDATE SET role = ?, password_hash = ?";
+                        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+                            pst.setString(1, username);
+                            pst.setString(2, role);
+                            pst.setString(3, newUser.getHashedPassword());
+                            pst.setString(4, role);
+                            pst.setString(5, newUser.getHashedPassword());
+                            pst.executeUpdate();
+                        }
+                        userData.add(newUser);
+                        showAlert("Success", role + " user '" + username + "' added successfully");
+                    } catch (Exception e) {
+                        showAlert("Error", "Failed to add user: " + e.getMessage());
+                    }
+                }
+            });
+        });
     }
 }
