@@ -273,6 +273,7 @@ public class CustomerController implements Initializable {
         });
 
         dialog.showAndWait().ifPresent(booking -> {
+            currentCustomer.makeBooking(booking.getRoom(), booking.getDateTime(), booking.getPlayers().size());
             bookingData.add(booking);
             showAlert("Success", "Room booked successfully!");
         });
