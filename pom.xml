@@ -65,6 +65,12 @@
             <artifactId>postgresql</artifactId>
             <version>42.7.5</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version> <!-- or latest version -->
+        </dependency>
+
     </dependencies>
 
     <build>
