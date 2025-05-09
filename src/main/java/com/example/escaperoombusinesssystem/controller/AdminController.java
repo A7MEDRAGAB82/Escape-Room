@@ -19,6 +19,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.net.URL;
@@ -52,13 +53,11 @@ public class AdminController implements Initializable {
     @FXML private TableColumn<Booking, Integer> solvedCluesColumn;
     @FXML private TableColumn<Booking, String> timeElapsedColumn;
     @FXML private TableColumn<Booking, String> bookingStatusColumn;
-    @FXML private TableColumn<Booking, Void> bookingActionColumn;
 
     // Users Table
     @FXML private TableView<User> usersTable;
     @FXML private TableColumn<User, String> usernameColumn;
     @FXML private TableColumn<User, String> roleColumn;
-    @FXML private TableColumn<User, Void> userActionColumn;
 
     // Players Table
     @FXML private TableView<Player> playersTable;
@@ -112,22 +111,24 @@ public class AdminController implements Initializable {
 
         actionColumn.setCellFactory(param -> new TableCell<>() {
             private final Button toggleBtn = new Button();
-            private final Button editBtn = new Button("Edit");
-            private final HBox buttons = new HBox(5, toggleBtn, editBtn);
+            private final HBox buttons = new HBox(5, toggleBtn);
 
             {
                 toggleBtn.getStyleClass().add("toggle-button");
-                editBtn.getStyleClass().add("edit-button");
 
                 toggleBtn.setOnAction(event -> {
                     EscapeRoom room = getTableView().getItems().get(getIndex());
-                    room.toggleIsActive();
-                    refreshTables();
-                });
-
-                editBtn.setOnAction(event -> {
-                    EscapeRoom room = getTableView().getItems().get(getIndex());
-                    editRoom(room);
+                    if (currentUser instanceof Admin) {
+                        Admin admin = (Admin) currentUser;
+                        try {
+                            admin.toggleRoomIsActive(room);
+                            refreshTables();
+                        } catch (Exception e) {
+                            showAlert("Error", e.getMessage());
+                        }
+                    } else {
+                        showAlert("Error", "Only admin users can toggle room status");
+                    }
                 });
             }
 
@@ -168,11 +169,12 @@ public class AdminController implements Initializable {
         });
 
         timeElapsedColumn.setCellValueFactory(cellData -> {
-            if (!cellData.getValue().getPlayers().isEmpty()) {
-                Duration duration = cellData.getValue().getPlayers().get(0).getTimeElapsed();
+            Booking booking = cellData.getValue();
+            if (booking.getDateTime().isBefore(LocalDateTime.now())) {
+                Duration duration = Duration.between(booking.getDateTime(), LocalDateTime.now());
                 return new SimpleStringProperty(formatDuration(duration));
             }
-            return new SimpleStringProperty("N/A");
+            return new SimpleStringProperty("Not started");
         });
 
         customerColumn.setCellValueFactory(cellData -> {
@@ -182,79 +184,12 @@ public class AdminController implements Initializable {
             return new SimpleStringProperty("No players");
         });
 
-        bookingActionColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button cancelBtn = new Button("Cancel");
-            private final Button confirmBtn = new Button("Confirm");
-            private final HBox buttons = new HBox(5, confirmBtn, cancelBtn);
-
-            {
-                cancelBtn.getStyleClass().add("cancel-button");
-                confirmBtn.getStyleClass().add("action-button");
-
-                cancelBtn.setOnAction(event -> {
-                    Booking booking = getTableView().getItems().get(getIndex());
-                    cancelBooking(booking);
-                });
-
-                confirmBtn.setOnAction(event -> {
-                    Booking booking = getTableView().getItems().get(getIndex());
-                    confirmBooking(booking);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    Booking booking = getTableView().getItems().get(getIndex());
-                    cancelBtn.setDisable(!"CONFIRMED".equals(booking.getStatus().toString()));
-                    confirmBtn.setDisable(!"PENDING".equals(booking.getStatus().toString()));
-                    setGraphic(buttons);
-                }
-            }
-        });
-
         bookingsTable.setItems(bookingData);
     }
 
     private void setupUserTable() {
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
-
-        userActionColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button resetPassBtn = new Button("Reset Password");
-            private final Button deleteBtn = new Button("Delete");
-            private final HBox buttons = new HBox(5, resetPassBtn, deleteBtn);
-
-            {
-                resetPassBtn.getStyleClass().add("action-button");
-                deleteBtn.getStyleClass().add("cancel-button");
-
-                resetPassBtn.setOnAction(event -> {
-                    User user = getTableView().getItems().get(getIndex());
-                    resetUserPassword(user);
-                });
-
-                deleteBtn.setOnAction(event -> {
-                    User user = getTableView().getItems().get(getIndex());
-                    deleteUser(user);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-//                    User user = getTableView().getItems().get(getIndex());
-//                    deleteBtn.setDisable(user.getUsername().equals(currentUser.getUsername()));
-//                    setGraphic(buttons);
-                }
-            }
-        });
 
         usersTable.setItems(userData);
     }
@@ -272,19 +207,10 @@ public class AdminController implements Initializable {
         });
 
         playerActionColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button addClueBtn = new Button("Add Clue");
-            private final Button viewCluesBtn = new Button("View Clues");
-            private final HBox buttons = new HBox(5, addClueBtn, viewCluesBtn);
+            private final Button viewCluesBtn = new Button("View Solved Clues");
+            private final HBox buttons = new HBox(5, viewCluesBtn);
 
             {
-                addClueBtn.getStyleClass().add("action-button");
-                viewCluesBtn.getStyleClass().add("view-button");
-
-                addClueBtn.setOnAction(event -> {
-                    Player player = getTableView().getItems().get(getIndex());
-                    addClueToPlayer(player);
-                });
-
                 viewCluesBtn.setOnAction(event -> {
                     Player player = getTableView().getItems().get(getIndex());
                     viewPlayerClues(player);
@@ -465,30 +391,21 @@ public class AdminController implements Initializable {
             if (roomName.trim().isEmpty()) {
                 showAlert("Error", "Room name cannot be empty");
             } else {
-                String newId = String.valueOf(roomData.size() + 1);
-                EscapeRoom newRoom = new EscapeRoom(newId, roomName, 3, 6); // Default difficulty 3, max players 6
-            // TODO : add room to database
-                roomData.add(newRoom);
-                showAlert("Success", "Room '" + roomName + "' added successfully");
-            }
-        });
-    }
-
-    // TODO : delete edit room methon ( not required )
-    private void editRoom(EscapeRoom room) {
-        TextInputDialog dialog = new TextInputDialog(room.getName());
-        dialog.setTitle("Edit Room");
-        dialog.setHeaderText("Edit escape room details");
-        dialog.setContentText("Enter new room name:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(roomName -> {
-            if (roomName.trim().isEmpty()) {
-                showAlert("Error", "Room name cannot be empty");
-            } else {
-                room.setName(roomName);
-                refreshTables();
-                showAlert("Success", "Room updated successfully");
+                try {
+                    String newId = String.valueOf(roomData.size() + 1);
+                    EscapeRoom newRoom = new EscapeRoom(newId, roomName, 3, 6); // Default difficulty 3, max players 6
+                    
+                    if (currentUser instanceof Admin) {
+                        Admin admin = (Admin) currentUser;
+                        admin.addRoom(newRoom);
+                        roomData.add(newRoom);
+                        showAlert("Success", "Room '" + roomName + "' added successfully");
+                    } else {
+                        showAlert("Error", "Only admin users can add rooms");
+                    }
+                } catch (Exception e) {
+                    showAlert("Error", e.getMessage());
+                }
             }
         });
     }
@@ -534,119 +451,18 @@ public class AdminController implements Initializable {
         }
     }
 
-    private void cancelBooking(Booking booking) {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirm Cancellation");
-        confirmation.setHeaderText("Cancel booking #" + booking.getBookingId() + "?");
-        confirmation.setContentText("This will notify the customer.");
-
-        confirmation.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                booking.setStatus(BookingStatus.CANCELLED);
-                refreshTables();
-                showAlert("Success", "Booking #" + booking.getBookingId() + " cancelled");
-            }
-        });
-    }
-
-    private void confirmBooking(Booking booking) {
-        booking.setStatus(BookingStatus.CONFIRMED);
-        refreshTables();
-        showAlert("Success", "Booking #" + booking.getBookingId() + " confirmed");
-    }
-
-    // TODO : remove reset password
-    private void resetUserPassword(User user) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Reset Password");
-        dialog.setHeaderText("Reset password for " + user.getUsername());
-        dialog.setContentText("Enter new password:");
-
-        dialog.showAndWait().ifPresent(newPassword -> {
-            if (newPassword.length() < 6) {
-                showAlert("Error", "Password must be at least 6 characters");
-            } else {
-                user.setPassword(newPassword); // In real app, hash this password
-                showAlert("Success", "Password reset for " + user.getUsername());
-            }
-        });
-    }
-
-    private void deleteUser(User user) {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirm Deletion");
-        confirmation.setHeaderText("Delete user " + user.getUsername() + "?");
-        confirmation.setContentText("This action cannot be undone.");
-
-        confirmation.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                userData.remove(user);
-                showAlert("Success", "User " + user.getUsername() + " deleted");
-            }
-        });
-    }
-
-    private void addClueToPlayer(Player player) {
-        Dialog<Clue> dialog = new Dialog<>();
-        dialog.setTitle("Add New Clue");
-        dialog.setHeaderText("Create a new clue for " + player.getName());
-
-        // Set the button types
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        TextField descriptionField = new TextField();
-        descriptionField.setPromptText("Description");
-        TextField solutionField = new TextField();
-        solutionField.setPromptText("Solution");
-        ChoiceBox<String> typeChoice = new ChoiceBox<>();
-        typeChoice.getItems().addAll("Physical", "Puzzle", "Riddle", "Hidden", "Code");
-        typeChoice.setValue("Physical");
-
-        grid.add(new Label("Description:"), 0, 0);
-        grid.add(descriptionField, 1, 0);
-        grid.add(new Label("Solution:"), 0, 1);
-        grid.add(solutionField, 1, 1);
-        grid.add(new Label("Type:"), 0, 2);
-        grid.add(typeChoice, 1, 2);
-
-        dialog.getDialogPane().setContent(grid);
-
-        // Convert the result to a clue when OK is clicked
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == ButtonType.OK) {
-                return new Clue(
-                        descriptionField.getText(),
-                        solutionField.getText(),
-                        typeChoice.getValue()
-                );
-            }
-            return null;
-        });
-
-        Optional<Clue> result = dialog.showAndWait();
-        result.ifPresent(clue -> {
-            player.addSolvedClue(clue);
-            refreshTables();
-            showAlert("Success", "New clue added to " + player.getName());
-        });
-    }
-
     private void viewPlayerClues(Player player) {
         VBox clueBox = new VBox(10);
         clueBox.setPadding(new Insets(15));
 
-        Label header = new Label("Clues Solved by " + player.getName());
+        Label header = new Label("Clues for " + player.getName());
         header.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
+        clueBox.getChildren().add(header);
 
-        int solvedCount = 0;
-        for (Clue clue : player.getSolvedClues()) {
-            if (clue.isSolved()) {
-                solvedCount++;
+        if (player.getSolvedClues().isEmpty()) {
+            clueBox.getChildren().add(new Label("No clues available for this player"));
+        } else {
+            for (Clue clue : player.getSolvedClues()) {
                 VBox clueCard = new VBox(5);
                 clueCard.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 10;");
 
@@ -674,7 +490,7 @@ public class AdminController implements Initializable {
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Player Clues");
-        alert.setHeaderText("Total clues solved: " + solvedCount + "/" + player.getSolvedClues().size());
+        alert.setHeaderText("Total clues: " + player.getSolvedClues().size());
         alert.getDialogPane().setContent(scrollPane);
         alert.getDialogPane().setPrefSize(400, 300);
         alert.showAndWait();
@@ -693,6 +509,134 @@ public class AdminController implements Initializable {
         long hours = duration.toHours();
         long minutes = duration.minusHours(hours).toMinutes();
         return String.format("%02d:%02d", hours, minutes);
+    }
+
+    // Add these new handler methods
+    @FXML
+    private void handleAddClueToRoom() {
+        EscapeRoom selectedRoom = roomsTable.getSelectionModel().getSelectedItem();
+        if (selectedRoom == null) {
+            showAlert("Error", "Please select a room first");
+            return;
+        }
+
+        Dialog<Clue> dialog = new Dialog<>();
+        dialog.setTitle("Add New Clue");
+        dialog.setHeaderText("Add clue to " + selectedRoom.getName());
+
+        // Set the button types
+        ButtonType addButtonType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+
+        // Create the clue form
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField descriptionField = new TextField();
+        descriptionField.setPromptText("Description");
+        TextField solutionField = new TextField();
+        solutionField.setPromptText("Solution");
+        ChoiceBox<String> typeChoice = new ChoiceBox<>();
+        typeChoice.getItems().addAll("Physical", "Puzzle", "Riddle", "Hidden", "Code");
+        typeChoice.setValue("Physical");
+
+        grid.add(new Label("Description:"), 0, 0);
+        grid.add(descriptionField, 1, 0);
+        grid.add(new Label("Solution:"), 0, 1);
+        grid.add(solutionField, 1, 1);
+        grid.add(new Label("Type:"), 0, 2);
+        grid.add(typeChoice, 1, 2);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Convert result to a clue
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == addButtonType) {
+                return new Clue(
+                        descriptionField.getText(),
+                        solutionField.getText(),
+                        typeChoice.getValue()
+                );
+            }
+            return null;
+        });
+
+        Optional<Clue> result = dialog.showAndWait();
+        result.ifPresent(clue -> {
+            selectedRoom.addClue(clue);
+            refreshTables();
+            showAlert("Success", "New clue added to " + selectedRoom.getName());
+        });
+    }
+
+    @FXML
+    private void handleViewRoomClues() {
+        EscapeRoom selectedRoom = roomsTable.getSelectionModel().getSelectedItem();
+        if (selectedRoom == null) {
+            showAlert("Error", "Please select a room first");
+            return;
+        }
+
+        VBox clueBox = new VBox(10);
+        clueBox.setPadding(new Insets(15));
+
+        Label header = new Label("Clues in " + selectedRoom.getName());
+        header.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
+        clueBox.getChildren().add(header);
+
+        if (selectedRoom.getClues().isEmpty()) {
+            clueBox.getChildren().add(new Label("No clues available for this room"));
+        } else {
+            for (Clue clue : selectedRoom.getClues()) {
+                VBox clueCard = new VBox(5);
+                clueCard.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 10;");
+
+                Label descLabel = new Label("Description: " + clue.getDescription());
+                Label typeLabel = new Label("Type: " + clue.getType());
+                Label statusLabel = new Label("Status: " + (clue.isSolved() ? "SOLVED" : "UNSOLVED"));
+                statusLabel.setStyle("-fx-text-fill: " + (clue.isSolved() ? "green" : "orange") + ";");
+
+                clueCard.getChildren().addAll(descLabel, typeLabel, statusLabel);
+                clueBox.getChildren().add(clueCard);
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane(clueBox);
+        scrollPane.setFitToWidth(true);
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Room Clues");
+        alert.setHeaderText("Clues in " + selectedRoom.getName());
+        alert.getDialogPane().setContent(scrollPane);
+        alert.getDialogPane().setPrefSize(400, 300);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void handleGenerateReport() {
+        if (currentUser instanceof Admin) {
+            Admin admin = (Admin) currentUser;
+            Report report = admin.generateReport();
+            
+            // Store the report in the database (simulated for now)
+            storeReport(report);
+            
+            // Show success message
+            showAlert("Success", "Report generated successfully!\nReport ID: " + report.getReportId());
+        } else {
+            showAlert("Error", "Only admin users can generate reports");
+        }
+    }
+
+    private void storeReport(Report report) {
+        // TODO: Implement actual database storage
+        // For now, we'll just print the report data
+        System.out.println("Storing report: " + report.getReportId());
+        System.out.println("Generated on: " + report.getGeneratedDate());
+        System.out.println("Report data:");
+        report.getData().forEach((key, value) -> System.out.println(key + ": " + value));
     }
 
     private void showAlert(String title, String message) {

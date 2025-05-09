@@ -40,12 +40,17 @@ public class Booking {
 
         this.room = room;
 
-        // Check if the room is already active (if needed)
-        if (this.room.isActive()) {
-            throw new IllegalStateException("Room is already booked and active");
+        // Check for overlapping bookings
+        for (Booking existingBooking : room.getBookings()) {
+            if (existingBooking.getDateTime().equals(dateTime) && existingBooking.isActive()) {
+                throw new IllegalStateException("Room is already booked for this time slot");
+            }
         }
 
         this.status = BookingStatus.CONFIRMED;
+        
+        // Add this booking to the room's bookings list
+        room.addBooking(this);
     }
 
     public void addPlayer(Player player) {

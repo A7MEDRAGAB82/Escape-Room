@@ -183,3 +183,22 @@
     -fx-border-width: 0 0 0 3;
     -fx-border-insets: 0 0 0 -3;
 }
+/* Add to your existing styles.css */
+.clue-card {
+    -fx-border-color: #34495e;
+    -fx-border-radius: 5;
+    -fx-padding: 10;
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
+.clue-card:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.clue-solved {
+    -fx-text-fill: #2ecc71;
+}
+
+.clue-unsolved {
+    -fx-text-fill: #e74c3c;
+}

@@ -26,6 +26,7 @@ public class Staff extends User {
          * 3. Marking past bookings as completed
          */
         public void resetRoom(EscapeRoom room) {
+            // TODO: Update room, clues, and player progress in the database after reset
             if (room == null) {
                 throw new IllegalArgumentException("Room is missing");
             }
@@ -57,6 +58,7 @@ public class Staff extends User {
  * @param newSolution The new solution text
  */
 public void updateClue(Clue clue, String newDescription, String newSolution) {
+    // TODO: Update clue details in the database
     if (clue == null) {
         throw new IllegalArgumentException("Clue cannot be null");
     }

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<StackPane style="-fx-background-color: linear-gradient(to right bottom, #00131e, #1b0023, #00131e);"
+           stylesheets="@../../../../css/styles.css"
+           xmlns="http://javafx.com/javafx/17.0.6"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.escaperoombusinesssystem.controller.CustomerController">
+
+    <children>
+        <ImageView blendMode="SCREEN" fitHeight="600.0" fitWidth="800.0" opacity="0.2" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+            <image>
+                <Image url="@../bg.jpg" />
+            </image>
+        </ImageView>
+
+        <BorderPane prefHeight="600.0" prefWidth="800.0" styleClass="login-pane">
+            <top>
+                <VBox alignment="CENTER" spacing="20">
+                    <padding>
+                        <Insets bottom="20" left="20" right="20" top="40" />
+                    </padding>
+                    <Label styleClass="header-label" text="Escape Room System Customer Panel">
+                        <font>
+                            <Font name="System Bold" size="24.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="welcomeLabel" styleClass="welcome-message" />
+                </VBox>
+            </top>
+
+            <left>
+                <VBox spacing="10" styleClass="sidebar">
+                    <padding>
+                        <Insets bottom="10" left="10" right="10" top="10" />
+                    </padding>
+                    <Button fx:id="roomsButton" onAction="#showRooms" styleClass="nav-button" text="Available Rooms">
+                        <tooltip>
+                            <Tooltip text="View and book rooms" />
+                        </tooltip>
+                        <graphic>
+                            <ImageView fitWidth="20" fitHeight="20">
+                                <!--<Image url="@../images/room.png"/>-->
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="bookingsButton" onAction="#showBookings" styleClass="nav-button" text="My Bookings">
+                        <tooltip>
+                            <Tooltip text="View and manage your bookings" />
+                        </tooltip>
+                        <graphic>
+                            <ImageView fitWidth="20" fitHeight="20">
+                                <!--<Image url="@../images/calendar.png"/>-->
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </VBox>
+            </left>
+
+            <center>
+                <StackPane>
+                    <!-- Rooms View -->
+                    <VBox fx:id="roomsView" spacing="20">
+                        <TableView fx:id="roomsTable" styleClass="admin-table">
+                            <columns>
+                                <TableColumn fx:id="roomIdColumn" styleClass="table-column" text="Room ID" />
+                                <TableColumn fx:id="roomNameColumn" styleClass="table-column" text="Room Name" />
+                                <TableColumn fx:id="difficultyColumn" styleClass="table-column" text="Difficulty" />
+                                <TableColumn fx:id="maxPlayersColumn" styleClass="table-column" text="Max Players" />
+                                <TableColumn fx:id="roomActionColumn" styleClass="table-column" text="Actions" />
+                            </columns>
+                        </TableView>
+                        <HBox alignment="BASELINE_CENTER" spacing="10">
+                            <Button fx:id="refreshRoomsBtn" onAction="#refreshData" styleClass="action-button" text="Refresh" />
+                        </HBox>
+                        <padding>
+                            <Insets bottom="20.0" left="30.0" right="30.0" top="10.0" />
+                        </padding>
+                    </VBox>
+
+                    <!-- Bookings View -->
+                    <VBox fx:id="bookingsView" visible="false" spacing="20">
+                        <TableView fx:id="bookingsTable" styleClass="admin-table">
+                            <columns>
+                                <TableColumn fx:id="bookingIdColumn" styleClass="table-column" text="Booking ID" />
+                                <TableColumn fx:id="roomColumn" styleClass="table-column" text="Room" />
+                                <TableColumn fx:id="dateColumn" styleClass="table-column" text="Date" />
+                                <TableColumn fx:id="timeColumn" styleClass="table-column" text="Time" />
+                                <TableColumn fx:id="playersColumn" styleClass="table-column" text="Players" />
+                                <TableColumn fx:id="statusColumn" styleClass="table-column" text="Status" />
+                                <TableColumn fx:id="bookingActionColumn" styleClass="table-column" text="Actions" />
+                            </columns>
+                        </TableView>
+                        <HBox alignment="BASELINE_CENTER" spacing="10">
+                            <Button fx:id="refreshBookingsBtn" onAction="#refreshData" styleClass="action-button" text="Refresh" />
+                        </HBox>
+                        <padding>
+                            <Insets bottom="20.0" left="30.0" right="30.0" top="10.0" />
+                        </padding>
+                    </VBox>
+                </StackPane>
+            </center>
+
+            <bottom>
+                <HBox alignment="CENTER" styleClass="footer">
+                    <padding>
+                        <Insets bottom="20" left="20" right="20" top="10" />
+                    </padding>
+                    <Button onAction="#handleLogout" styleClass="logout-button" text="Logout">
+                        <tooltip>
+                            <Tooltip text="Logout from customer panel" />
+                        </tooltip>
+                    </Button>
+                </HBox>
+            </bottom>
+        </BorderPane>
+    </children>
+</StackPane> 

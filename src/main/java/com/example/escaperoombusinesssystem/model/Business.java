@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 public class Business {
     private String name;
-    private static ArrayList<EscapeRoom> rooms;
+    private static ArrayList<EscapeRoom> rooms = new ArrayList<>();
 
 
     public Business(String name) {
         this.name = name;
-        this.rooms = new ArrayList<>();
     }
 
     // Core Methods

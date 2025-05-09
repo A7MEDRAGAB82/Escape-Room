@@ -121,12 +121,9 @@
                                 <TableColumn fx:id="bookingTimeColumn" styleClass="table-column" text="Time" />
                                 <TableColumn fx:id="bookingPlayersColumn" styleClass="table-column" text="Players" />
                                 <TableColumn fx:id="bookingStatusColumn" styleClass="table-column" text="Status" />
-                                <TableColumn fx:id="bookingActionColumn" styleClass="table-column" text="Actions" />
                             </columns>
                         </TableView>
                         <HBox alignment="BASELINE_CENTER" spacing="10">
-                            <Button fx:id="addBookingBtn" onAction="#handleAddBooking" styleClass="action-button" text="Add Booking" />
-                            <Button fx:id="cancelBookingBtn" onAction="#handleCancelBooking" styleClass="cancel-button" text="Cancel Booking" />
                             <Button fx:id="refreshBookingsBtn" onAction="#refreshData" styleClass="action-button" text="Refresh" />
                         </HBox>
                         <padding>
