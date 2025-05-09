@@ -1,5 +1,9 @@
 package com.example.escaperoombusinesssystem.model;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class EscapeRoom {
@@ -29,7 +33,28 @@ public class EscapeRoom {
        if (clue == null) {
            throw new IllegalArgumentException("Clue cannot be null");
        }
-this.clues.addLast(clue);
+
+       Connection conn = DBConnector.connect();
+       String sql = "insert into clues (description , solution , solved , type ) values (? , ? , ? , ?) ";
+
+
+       try (PreparedStatement pst = conn.prepareStatement(sql)) {
+
+           pst.setString(1, clue.getDescription());
+           pst.setString(2, clue.getSolution());
+           pst.setBoolean(3, clue.isSolved());
+           pst.setString(4, clue.getType());
+           pst.executeQuery();
+
+           this.clues.add(clue);
+
+       } catch (SQLException e) {
+           throw new RuntimeException(e);
+       }
+
+
+
+
     }
 
    public ArrayList<Clue> getClues(){
