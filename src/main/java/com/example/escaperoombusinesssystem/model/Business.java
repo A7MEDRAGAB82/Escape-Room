@@ -17,9 +17,9 @@ public class Business {
      * Adds a new escape room to the business
      * @throws Exception if room already exists
      */
-    public static void addRoom(EscapeRoom room) throws Exception {
+    public static void addRoom(EscapeRoom room) throws IllegalArgumentException,IllegalStateException {
         if (rooms.contains(room)) { //contains is a method in arraylist
-            throw new Exception("Room '" + room.getName() + "' already exists!");
+            throw new IllegalStateException("Room '" + room.getName() + "' already exists!");
         }
         rooms.add(room);
     }

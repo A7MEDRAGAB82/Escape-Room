@@ -31,7 +31,7 @@ public class EscapeRoom {
 
    public void addClue(Clue clue){
        if (clue == null) {
-           throw new IllegalArgumentException("com.example.escaperoombusinesssystem.model.Clue cannot be null");
+           throw new IllegalArgumentException("Clue cannot be null");
        }
 
        Connection conn = DBConnector.connect();
@@ -87,6 +87,10 @@ return clues;
     }
     public void toggleIsActive() {
         this.isActive = !isActive;
+    }
+
+    public void activate(){
+        this.isActive = true;
     }
 
     public boolean isActive() {
