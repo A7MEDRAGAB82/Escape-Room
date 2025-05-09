@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
+import java.sql.Connection;
 
 public class LoginController {
 
@@ -50,7 +51,61 @@ public class LoginController {
             return;
         }
 
-        // TODO: Replace authenticateUser with a database call to validate user credentials
+        private User authenticateUser(String username, String plainTextPassword) {
+            String query = "SELECT id, username, role, hashed_password FROM users WHERE username = ?";
+
+            try (Connection connection = DBConnector.connect();
+                 PreparedStatement statement = connection.prepareStatement(query)) {
+
+                statement.setString(1, username);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        String storedHash = resultSet.getString("hashed_password");
+                        String role = resultSet.getString("role");
+                        int id = resultSet.getInt("id");
+                        String dbUsername = resultSet.getString("username");
+
+                        // Verify password against stored hash
+                        if (BCrypt.checkpw(plainTextPassword, storedHash)) {
+                            // Create the appropriate User subclass instance
+                            // Note: We don't need to pass the password here since it's already verified
+                            return createUserInstance(role, id, dbUsername, storedHash);
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                System.err.println("Database error during authentication: " + e.getMessage());
+                // Consider using a proper logging framework
+            }
+
+            return null; // Authentication failed
+        }
+
+        private User createUserInstance(String role, int id, String username, String hashedPassword) {
+            // Since User is abstract, we need concrete implementations
+            return switch (role.toLowerCase()) {
+                case "admin" -> new AdminUser(id, username, hashedPassword) {
+                    @Override
+                    public void accessDashboard() {
+                        // Admin-specific dashboard implementation
+                    }
+                };
+                case "employee" -> new EmployeeUser(id, username, hashedPassword) {
+                    @Override
+                    public void accessDashboard() {
+                        // Employee-specific dashboard implementation
+                    }
+                };
+                case "customer" -> new CustomerUser(id, username, hashedPassword) {
+                    @Override
+                    public void accessDashboard() {
+                        // Customer-specific dashboard implementation
+                    }
+                };
+                default -> throw new IllegalArgumentException("Unknown role: " + role);
+            };
+        }
         User user = authenticateUser(username, password);
 
         if (user != null) {
