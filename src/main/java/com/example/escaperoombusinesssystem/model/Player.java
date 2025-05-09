@@ -10,17 +10,14 @@ public class Player {
     private LocalDateTime startTime;
 
     public Player(String name) {
-<<<<<<< HEAD:src/main/java/com/example/escaperoombusinesssystem/Player.java
         if (name == null || name.isEmpty())
             throw new IllegalArgumentException("Player 's name can't be empty");
-=======
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("com.example.escaperoombusinesssystem.model.Player 's name can't be empty");
         }
         else {
             this.name = name;
         }
->>>>>>> 7be355b865009bb1ae8958639d367e776578aab4:src/main/java/com/example/escaperoombusinesssystem/model/Player.java
 
 
         this.name = name;

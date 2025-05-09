@@ -27,11 +27,7 @@ public class EscapeRoom {
 
    public void addClue(Clue clue){
        if (clue == null) {
-<<<<<<< HEAD:src/main/java/com/example/escaperoombusinesssystem/EscapeRoom.java
            throw new IllegalArgumentException("Clue cannot be null");
-=======
-           throw new IllegalArgumentException("com.example.escaperoombusinesssystem.model.Clue cannot be null");
->>>>>>> 7be355b865009bb1ae8958639d367e776578aab4:src/main/java/com/example/escaperoombusinesssystem/model/EscapeRoom.java
        }
 this.clues.addLast(clue);
     }

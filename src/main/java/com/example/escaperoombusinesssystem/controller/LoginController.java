@@ -30,7 +30,7 @@ public class LoginController {
     @FXML
     private Label errorMessageLabel;
 
-//    private DBConnector dbConnector = DBConnector.getInstance();
+//  private DBConnector dbConnector = DBConnector.getInstance();
 
     @FXML
     private void initialize() {
