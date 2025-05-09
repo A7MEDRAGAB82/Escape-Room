@@ -1,10 +1,11 @@
 module com.example.escaperoombusinesssystem {
     requires javafx.controls;
     requires javafx.fxml;
-    requires java.sql;
     requires io.github.cdimascio.dotenv.java;
     requires jbcrypt;
     requires mysql.connector.j;
+    requires com.google.gson;
+    requires java.sql;
 
 
     // Add this line to export your controller package:
