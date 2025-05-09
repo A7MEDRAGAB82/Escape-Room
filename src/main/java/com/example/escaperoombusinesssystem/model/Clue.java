@@ -36,6 +36,10 @@ public String getHint(){
         this.solution = solution;
     }
 
+    public String getSolution() {
+        return  solution;
+    }
+
 public void solve(){
         solved=true;
 }
