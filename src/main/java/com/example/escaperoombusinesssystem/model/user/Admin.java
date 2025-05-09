@@ -108,13 +108,33 @@ try {
 
     public void addRoom(EscapeRoom room) throws IllegalArgumentException,IllegalStateException {
         // TODO: Add the new room to the database
+
         if (room == null) {
             throw new IllegalArgumentException("Room cannot be null!");
         }
         if (Business.getRooms().contains(room)) {
             throw new IllegalStateException("Room '" + room.getName() + "' already exists!");
         }
-        Business.addRoom(room);
+
+
+        Connection conn = DBConnector.connect();
+        String sql = "insert into escape_rooms (name , diffuculty  , max_players ,  is_active , created_at) values(?, ?, ?, ?, ?) ";
+
+
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, room.getName());
+            pst.setInt(2, room.getDifficulty());
+            pst.setInt(3, room.getMaxPlayers());
+            pst.setBoolean(4, room.isActive());
+            pst.setObject(5, LocalDateTime.now());
+            pst.executeQuery();
+            Business.addRoom(room);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
     public void toggleRoomIsActive(EscapeRoom room) {
