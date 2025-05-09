@@ -10,13 +10,11 @@ public class Player {
     private LocalDateTime startTime;
 
     public Player(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("com.example.escaperoombusinesssystem.Player 's name can't be empty");
-        }
-        else {
-            this.name = name;
-        }
+        if (name == null || name.isEmpty())
+            throw new IllegalArgumentException("Player 's name can't be empty");
 
+
+        this.name = name;
         this.solvedClues = new ArrayList<>();
         this.startTime = LocalDateTime.now();
     }

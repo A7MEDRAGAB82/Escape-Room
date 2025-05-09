@@ -76,7 +76,7 @@ public class Admin extends User {
        return report;
    }
 
-    public void addRoom(EscapeRoom room) throws Exception {
+    public void addRoom(EscapeRoom room) throws IllegalArgumentException,IllegalStateException {
         if (room == null) {
             throw new IllegalArgumentException("Room cannot be null!");
         }
