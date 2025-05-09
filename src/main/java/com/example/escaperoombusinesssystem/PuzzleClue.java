@@ -3,8 +3,8 @@ package com.example.escaperoombusinesssystem;
 public class PuzzleClue extends Clue {
     private String puzzleDetails;
 
-    public PuzzleClue(String description, String slution,String puzzleDetails ) {
-        super(description,slution,"puzzle");
+    public PuzzleClue(String description, String solution,String puzzleDetails ) {
+        super(description,solution,"puzzle");
         if (puzzleDetails == null ) {
             throw new IllegalArgumentException("Puzzle details cannot be null or empty");
         }
