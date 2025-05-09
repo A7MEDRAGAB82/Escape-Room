@@ -1,9 +1,10 @@
-package com.example.escaperoombusinesssystem;
-import java.time.LocalDate;
+package com.example.escaperoombusinesssystem.model.user;
+import com.example.escaperoombusinesssystem.model.*;
+
 import java.util.*;
 
-import static com.example.escaperoombusinesssystem.BookingStatus.CANCELLED;
-import static com.example.escaperoombusinesssystem.BookingStatus.CONFIRMED;
+import static com.example.escaperoombusinesssystem.model.BookingStatus.CANCELLED;
+import static com.example.escaperoombusinesssystem.model.BookingStatus.CONFIRMED;
 
 public class Admin extends User {
 
@@ -12,6 +13,7 @@ public class Admin extends User {
     }
 
    public Report generateReport() {
+       // TODO: Fetch all rooms and bookings from the database instead of Business class
        Map<String, Object> reportData = new HashMap<>();
 
        // Calculate basic statistics
@@ -77,6 +79,7 @@ public class Admin extends User {
    }
 
     public void addRoom(EscapeRoom room) throws Exception {
+        // TODO: Add the new room to the database
         if (room == null) {
             throw new IllegalArgumentException("Room cannot be null!");
         }
@@ -86,10 +89,11 @@ public class Admin extends User {
         Business.addRoom(room);
     }
 
-    public void deactivateRoom(EscapeRoom room) {
+    public void toggleRoomIsActive(EscapeRoom room) {
+        // TODO: Update the room's active status in the database
         if (room == null) throw new IllegalArgumentException("Room cannot be null!");
-        room.deactivate();
-        System.out.println("Room '" + room.getName() + "' deactivated.");
+        room.toggleIsActive();
+        System.out.println("Room '" + room.getName() + (room.isActive() ? "' activated." : "' deactivated."));
     }
 
     @Override

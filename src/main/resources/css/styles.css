@@ -1,0 +1,204 @@
+
+.root {
+    -fx-font-family: "Arial Rounded MT Bold", sans-serif;
+    -fx-background-color: linear-gradient(
+            to right bottom,
+            #00131e,
+            #1b0023,
+            #00131e
+    );
+}
+
+.sceneTitle {
+    -fx-font-size: xx-large;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+.label {
+    -fx-text-fill: white;
+
+}
+.button {
+    -fx-background-color: #7915b5;
+    -fx-border-radius: 50px;
+    -fx-text-fill: white;
+    -fx-padding: 8px 12px;
+    -fx-max-width: 200px;
+}
+
+
+/* Preserved Original Styles */
+.login-pane {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2a5065;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+.header-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.sidebar {
+    -fx-background-radius: 5;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 15;
+}
+
+.nav-button:hover {
+    /*-fx-background-color: rgba(42, 80, 101, 0.7);*/
+}
+
+.nav-button.active {
+    -fx-background-color: #2a5065;
+}
+
+/* New Admin Table Styles */
+.admin-table {
+    -fx-base: #12005b;
+    -fx-control-inner-background: #1a1a2e;
+    -fx-background-color: #1a1a2e;
+    -fx-table-cell-border-color: transparent;
+    -fx-table-header-border-color: transparent;
+}
+
+.table-column {
+    -fx-alignment: CENTER;
+    -fx-text-fill: white;
+}
+
+/* Action Buttons */
+.action-button {
+    -fx-background-color: #2a5065;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 5;
+}
+
+.action-button:hover {
+    -fx-background-color: #3a7090;
+}
+
+.toggle-button {
+    -fx-background-color: #2a5065;
+    -fx-text-fill: white;
+    -fx-min-width: 80;
+}
+
+.toggle-button:hover {
+    -fx-background-color: #3a7090;
+}
+
+/* Footer Styles */
+.footer {
+    /*-fx-background-color: rgba(10, 30, 45, 0.7);*/
+}
+
+.logout-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.logout-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+.welcome-message {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-size: 14px;
+}
+
+/* Ensure tables match admin dashboard */
+.admin-table {
+    -fx-background-color: transparent;
+    -fx-border-color: #34495e;
+    -fx-border-radius: 5;
+    -fx-padding: 5;
+}
+
+.admin-table .table-row-cell {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.admin-table .table-row-cell:odd {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
+.admin-table .table-row-cell:selected {
+    -fx-background-color: #3498db;
+}
+
+.table-column {
+    -fx-alignment: CENTER;
+    -fx-border-color: transparent;
+}
+
+/* Ensure buttons match */
+.action-button {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.action-button:hover {
+    -fx-background-color: #27ae60;
+}
+
+.cancel-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+.logout-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.logout-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* Active nav button */
+.nav-button.active {
+    -fx-background-color: #2980b9;
+    -fx-border-color: #3498db;
+    -fx-border-width: 0 0 0 3;
+    -fx-border-insets: 0 0 0 -3;
+}
+/* Add to your existing styles.css */
+.clue-card {
+    -fx-border-color: #34495e;
+    -fx-border-radius: 5;
+    -fx-padding: 10;
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
+.clue-card:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.clue-solved {
+    -fx-text-fill: #2ecc71;
+}
+
+.clue-unsolved {
+    -fx-text-fill: #e74c3c;
+}

@@ -1,11 +1,8 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-
-import static com.example.escaperoombusinesssystem.BookingStatus.CANCELLED;
-import static com.example.escaperoombusinesssystem.BookingStatus.CONFIRMED;
 
 public class Booking {
     private String bookingId;
@@ -43,12 +40,17 @@ public class Booking {
 
         this.room = room;
 
-        // Check if the room is already active (if needed)
-        if (this.room.isActive()) {
-            throw new IllegalStateException("Room is already booked and active");
+        // Check for overlapping bookings
+        for (Booking existingBooking : room.getBookings()) {
+            if (existingBooking.getDateTime().equals(dateTime) && existingBooking.isActive()) {
+                throw new IllegalStateException("Room is already booked for this time slot");
+            }
         }
 
         this.status = BookingStatus.CONFIRMED;
+        
+        // Add this booking to the room's bookings list
+        room.addBooking(this);
     }
 
     public void addPlayer(Player player) {
@@ -84,4 +86,11 @@ public class Booking {
         return this.status != BookingStatus.CANCELLED;
     }
 
+    public String getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
+    }
 }

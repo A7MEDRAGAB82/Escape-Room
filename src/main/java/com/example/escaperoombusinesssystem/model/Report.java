@@ -1,4 +1,4 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model;
 
 import java.util.*;
 import java.time.*;
@@ -11,8 +11,8 @@ public class Report {
 
     public Report(Map<String, Object> data) {
         this.reportId = "Report" + System.currentTimeMillis();
+        this.data = new HashMap<>(data); // Initialize with the provided data
         addData("Report ID : " , reportId);
-        this.data = data;
         this.generatedDate = LocalDate.now();
     }
 
