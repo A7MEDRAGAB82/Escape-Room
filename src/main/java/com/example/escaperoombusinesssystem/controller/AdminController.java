@@ -632,11 +632,13 @@ public class AdminController implements Initializable {
 
     private void storeReport(Report report) {
         // TODO: Implement actual database storage
+        ((Admin) currentUser).generateReport();
         // For now, we'll just print the report data
         System.out.println("Storing report: " + report.getReportId());
         System.out.println("Generated on: " + report.getGeneratedDate());
         System.out.println("Report data:");
         report.getData().forEach((key, value) -> System.out.println(key + ": " + value));
+
     }
 
     private void showAlert(String title, String message) {

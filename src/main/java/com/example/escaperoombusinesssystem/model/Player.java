@@ -10,6 +10,8 @@ public class Player {
     private LocalDateTime startTime;
 
     public Player(String name) {
+        if (name == null || name.isEmpty())
+            throw new IllegalArgumentException("Player 's name can't be empty");
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("com.example.escaperoombusinesssystem.model.Player 's name can't be empty");
         }
@@ -17,6 +19,8 @@ public class Player {
             this.name = name;
         }
 
+
+        this.name = name;
         this.solvedClues = new ArrayList<>();
         this.startTime = LocalDateTime.now();
     }
