@@ -35,17 +35,18 @@ public class Customer extends User {
         Booking newBooking = new Booking(room, dateTime, players);
 
         Connection conn = DBConnector.connect();
-        String sql = "insert into bookings (booking_id , room_id , booking_time , status , created_at) values (?, ?, ?, ?, ?)";
+        String sql = "insert into bookings ( room_id , booking_time , status , created_at) values ( ?, ?, ?, ?)";
         try (PreparedStatement pst = conn.prepareStatement(sql)) {
-            pst.setString(1, newBooking.getBookingId());
-            pst.setString(2, room.getId());
-            pst.setObject(3, newBooking.getDateTime());
+            pst.setString(1, room.getId());
+            pst.setObject(2, newBooking.getDateTime());
             if (newBooking.getStatus() == BookingStatus.CONFIRMED) {
-                pst.setString(4, "CONFIRMED");
+                pst.setString(3, "CONFIRMED");
             } else {
                 throw new IllegalStateException("Failed to confirm your booking");
             }
-            pst.setObject(5, LocalDateTime.now());
+            pst.setObject(4, LocalDateTime.now());
+            pst.executeQuery();
+
             room.addBooking(newBooking); // Auto-registers with the room
             return newBooking;
         } catch (SQLException e) {
