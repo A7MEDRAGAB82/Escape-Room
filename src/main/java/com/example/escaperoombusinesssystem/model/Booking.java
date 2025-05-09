@@ -99,7 +99,4 @@ public class Booking {
         return bookingId;
     }
 
-    public void setBookingId(String bookingId) {
-        this.bookingId = bookingId;
-    }
 }
