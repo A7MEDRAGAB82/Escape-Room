@@ -147,30 +147,6 @@ public class StaffController implements Initializable {
                 new SimpleIntegerProperty(cellData.getValue().getPlayers().size()).asObject());
         bookingStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        bookingActionColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button cancelBtn = new Button("Cancel");
-
-            {
-                cancelBtn.getStyleClass().add("cancel-button");
-                cancelBtn.setOnAction(event -> {
-                    Booking booking = getTableView().getItems().get(getIndex());
-                    handleCancelBooking(booking);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    Booking booking = getTableView().getItems().get(getIndex());
-                    cancelBtn.setDisable(!"CONFIRMED".equals(booking.getStatus().toString()));
-                    setGraphic(cancelBtn);
-                }
-            }
-        });
-
         bookingsTable.setItems(bookingData);
     }
 
@@ -310,31 +286,13 @@ public class StaffController implements Initializable {
     // Action handlers
     @FXML
     private void handleResetRoom(EscapeRoom room) {
-        EscapeRoom selected = roomsTable.getSelectionModel().getSelectedItem();
+        EscapeRoom selected = room;
         if (selected != null) {
             currentStaff.resetRoom(selected);
             refreshData();
             showAlert("Success", "Room " + selected.getName() + " has been reset");
         } else {
             showAlert("Error", "Please select a room to reset");
-        }
-    }
-
-    @FXML
-    private void handleAddBooking() {
-        // Implementation for adding a new booking
-        showAlert("Info", "Add booking functionality will be implemented here");
-    }
-
-    @FXML
-    private void handleCancelBooking(Booking booking) {
-        Booking selected = bookingsTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            selected.setStatus(BookingStatus.CANCELLED);
-            refreshData();
-            showAlert("Success", "Booking #" + selected.getBookingId() + " cancelled");
-        } else {
-            showAlert("Error", "Please select a booking to cancel");
         }
     }
 
@@ -375,8 +333,22 @@ public class StaffController implements Initializable {
 
     @FXML
     private void handleLogout() {
-        // Implementation for logout
-        showAlert("Info", "Logout functionality will be implemented here");
+        try {
+            // Load the login view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/escaperoombusinesssystem/view/LoginView.fxml"));
+            Parent root = loader.load();
+            
+            // Get the current stage and set the new scene
+            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Escape Room System - Login");
+            
+            // Clear the current staff data
+            this.currentStaff = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to load login screen");
+        }
     }
 
     @FXML
@@ -473,26 +445,6 @@ public class StaffController implements Initializable {
             }
         } else {
             showAlert("Error", "Please select a room to reset");
-        }
-    }
-
-    @FXML
-    private void handleCancelBooking() {
-        Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
-        if (selectedBooking != null) {
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmation.setTitle("Confirm Cancellation");
-            confirmation.setHeaderText("Cancel Booking #" + selectedBooking.getBookingId() + "?");
-            confirmation.setContentText("This will notify the players.");
-
-            Optional<ButtonType> result = confirmation.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                selectedBooking.setStatus(BookingStatus.CANCELLED);
-                refreshData();
-                showAlert("Success", "Booking #" + selectedBooking.getBookingId() + " cancelled");
-            }
-        } else {
-            showAlert("Error", "Please select a booking to cancel");
         }
     }
 

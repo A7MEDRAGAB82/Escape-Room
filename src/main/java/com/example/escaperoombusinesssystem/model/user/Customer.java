@@ -14,6 +14,7 @@ public class Customer extends User {
 
     // Check room availability directly through EscapeRoom
     public boolean isRoomAvailable(EscapeRoom room, LocalDateTime dateTime) {
+        // TODO: Check room availability from the database
         for (Booking booking : room.getBookings()) {
             if (booking.getDateTime().equals(dateTime) && booking.isActive()) {
                 return false; // Room is booked at this time
@@ -32,12 +33,13 @@ public class Customer extends User {
         return newBooking;
     }
 
-
     public BookingStatus checkStatus(Booking booking) {
+        // TODO: Fetch the latest booking status from the database
         return booking.getStatus();
     }
 
     public void cancelBooking(Booking booking) {
+        // TODO: Update the booking status to cancelled in the database
         booking.cancel();
     }
 
