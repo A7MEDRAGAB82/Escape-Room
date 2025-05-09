@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<StackPane style="-fx-background-color: linear-gradient(to right bottom, #00131e, #1b0023, #00131e);"
+           stylesheets="@../../../../css/styles.css"
+           xmlns="http://javafx.com/javafx/17.0.6"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.escaperoombusinesssystem.controller.StaffController">
+
+    <children>
+        <ImageView blendMode="SCREEN" fitHeight="600.0" fitWidth="800.0" opacity="0.2" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+            <image>
+                <Image url="@../bg.jpg" />
+            </image>
+        </ImageView>
+
+        <BorderPane prefHeight="600.0" prefWidth="800.0" styleClass="login-pane">
+            <top>
+                <VBox alignment="CENTER" spacing="20">
+                    <padding>
+                        <Insets bottom="20" left="20" right="20" top="40" />
+                    </padding>
+                    <Label styleClass="header-label" text="Escape Room System Staff Panel">
+                        <font>
+                            <Font name="System Bold" size="24.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="welcomeLabel" styleClass="welcome-message" />
+                </VBox>
+            </top>
+
+            <left>
+                <VBox spacing="10" styleClass="sidebar">
+                    <padding>
+                        <Insets bottom="10" left="10" right="10" top="10" />
+                    </padding>
+                    <Button fx:id="roomMonitorBtn" onAction="#showRoomMonitoring" styleClass="nav-button" text="Rooms">
+                        <tooltip>
+                            <Tooltip text="Monitor and manage rooms" />
+                        </tooltip>
+                        <graphic>
+                            <ImageView fitWidth="20" fitHeight="20">
+<!--                                <Image url="@../images/room.png"/>-->
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="bookingManageBtn" onAction="#showBookingManagement" styleClass="nav-button" text="Bookings">
+                        <tooltip>
+                            <Tooltip text="Manage bookings" />
+                        </tooltip>
+                        <graphic>
+                            <ImageView fitWidth="20" fitHeight="20">
+<!--                                <Image url="@../images/calendar.png"/>-->
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="clueManageBtn" onAction="#showClueManagement" styleClass="nav-button" text="Clues">
+                        <tooltip>
+                            <Tooltip text="Manage game clues" />
+                        </tooltip>
+                        <graphic>
+                            <ImageView fitWidth="20" fitHeight="20">
+<!--                                <Image url="@../images/clue.png"/>-->
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="playerAssistBtn" onAction="#showPlayerAssistance" styleClass="nav-button" text="Players">
+                        <tooltip>
+                            <Tooltip text="Assist players" />
+                        </tooltip>
+                        <graphic>
+                            <ImageView fitWidth="20" fitHeight="20">
+<!--                                <Image url="@../images/player.png"/>-->
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </VBox>
+            </left>
+
+            <center>
+                <StackPane>
+                    <!-- Room Monitoring View -->
+                    <VBox fx:id="roomMonitorView" spacing="20">
+                        <TableView fx:id="roomsTable" styleClass="admin-table">
+                            <columns>
+                                <TableColumn fx:id="roomIdColumn" styleClass="table-column" text="Room ID" />
+                                <TableColumn fx:id="roomNameColumn" styleClass="table-column" text="Room Name" />
+                                <TableColumn fx:id="roomStatusColumn" styleClass="table-column" text="Status" />
+                                <TableColumn fx:id="currentBookingColumn" styleClass="table-column" text="Current Booking" />
+                                <TableColumn fx:id="roomActionColumn" styleClass="table-column" text="Actions" />
+                            </columns>
+                        </TableView>
+                        <HBox alignment="BASELINE_CENTER" spacing="10">
+                            <Button fx:id="resetRoomBtn" onAction="#handleResetRoom" styleClass="action-button" text="Reset Room" />
+                            <Button fx:id="refreshRoomsBtn" onAction="#refreshData" styleClass="action-button" text="Refresh" />
+                        </HBox>
+                        <padding>
+                            <Insets bottom="20.0" left="30.0" right="30.0" top="10.0" />
+                        </padding>
+                    </VBox>
+
+                    <!-- Booking Management View -->
+                    <VBox fx:id="bookingManageView" visible="false" spacing="20">
+                        <TableView fx:id="bookingsTable" styleClass="admin-table">
+                            <columns>
+                                <TableColumn fx:id="bookingIdColumn" styleClass="table-column" text="Booking ID" />
+                                <TableColumn fx:id="bookingRoomColumn" styleClass="table-column" text="Room" />
+                                <TableColumn fx:id="bookingTimeColumn" styleClass="table-column" text="Time" />
+                                <TableColumn fx:id="bookingPlayersColumn" styleClass="table-column" text="Players" />
+                                <TableColumn fx:id="bookingStatusColumn" styleClass="table-column" text="Status" />
+                            </columns>
+                        </TableView>
+                        <HBox alignment="BASELINE_CENTER" spacing="10">
+                            <Button fx:id="refreshBookingsBtn" onAction="#refreshData" styleClass="action-button" text="Refresh" />
+                        </HBox>
+                        <padding>
+                            <Insets bottom="20.0" left="30.0" right="30.0" top="10.0" />
+                        </padding>
+                    </VBox>
+
+                    <!-- Clue Management View -->
+                    <VBox fx:id="clueManageView" visible="false" spacing="20">
+                        <TableView fx:id="cluesTable" styleClass="admin-table">
+                            <columns>
+                                <TableColumn fx:id="clueDescriptionColumn" styleClass="table-column" text="Description" />
+                                <TableColumn fx:id="clueTypeColumn" styleClass="table-column" text="Type" />
+                                <TableColumn fx:id="clueStatusColumn" styleClass="table-column" text="Status" />
+                                <TableColumn fx:id="clueActionColumn" styleClass="table-column" text="Actions" />
+                            </columns>
+                        </TableView>
+                        <HBox alignment="BASELINE_CENTER" spacing="10">
+                            <Button fx:id="addClueBtn" onAction="#handleAddClue" styleClass="action-button" text="Add Clue" />
+                            <Button fx:id="resetClueBtn" onAction="#handleResetClue" styleClass="action-button" text="Reset Clue" />
+                            <Button fx:id="refreshCluesBtn" onAction="#refreshData" styleClass="action-button" text="Refresh" />
+                        </HBox>
+                        <padding>
+                            <Insets bottom="20.0" left="30.0" right="30.0" top="10.0" />
+                        </padding>
+                    </VBox>
+
+                    <!-- Player Assistance View -->
+                    <VBox fx:id="playerAssistView" visible="false" spacing="20">
+                        <TableView fx:id="playersTable" styleClass="admin-table">
+                            <columns>
+                                <TableColumn fx:id="playerNameColumn" styleClass="table-column" text="Player Name" />
+                                <TableColumn fx:id="playerRoomColumn" styleClass="table-column" text="Current Room" />
+                                <TableColumn fx:id="playerCluesColumn" styleClass="table-column" text="Clues Solved" />
+                                <TableColumn fx:id="playerTimeColumn" styleClass="table-column" text="Time Elapsed" />
+                                <TableColumn fx:id="playerActionColumn" styleClass="table-column" text="Actions" />
+                            </columns>
+                        </TableView>
+                        <HBox alignment="BASELINE_CENTER" spacing="10">
+                            <Button fx:id="giveHintBtn" onAction="#handleGiveHint" styleClass="action-button" text="Give Hint" />
+                            <Button fx:id="refreshPlayersBtn" onAction="#refreshData" styleClass="action-button" text="Refresh" />
+                        </HBox>
+                        <padding>
+                            <Insets bottom="20.0" left="30.0" right="30.0" top="10.0" />
+                        </padding>
+                    </VBox>
+                </StackPane>
+            </center>
+
+            <bottom>
+                <HBox alignment="CENTER" styleClass="footer">
+                    <padding>
+                        <Insets bottom="20" left="20" right="20" top="10" />
+                    </padding>
+                    <Button onAction="#handleLogout" styleClass="logout-button" text="Logout">
+                        <tooltip>
+                            <Tooltip text="Logout from staff panel" />
+                        </tooltip>
+                    </Button>
+                </HBox>
+            </bottom>
+        </BorderPane>
+    </children>
+</StackPane>
