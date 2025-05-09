@@ -1,4 +1,4 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model;
 
 public class Clue implements Solvable {
     private  String description;

@@ -1,4 +1,4 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model;
 
 import java.util.*;
 
@@ -11,7 +11,7 @@ public class EscapeRoom {
     private List<Booking> bookings = new ArrayList<>();
     private boolean isActive = true; // Default to active
 
-    EscapeRoom(String id ,String name,int difficulty,int maxPlayers){
+    public EscapeRoom(String id, String name, int difficulty, int maxPlayers){
         if (id == null || name == null) {
             throw new IllegalArgumentException("ID and name cannot be null");
         }
@@ -27,7 +27,7 @@ public class EscapeRoom {
 
    public void addClue(Clue clue){
        if (clue == null) {
-           throw new IllegalArgumentException("com.example.escaperoombusinesssystem.Clue cannot be null");
+           throw new IllegalArgumentException("com.example.escaperoombusinesssystem.model.Clue cannot be null");
        }
 this.clues.addLast(clue);
     }
@@ -60,6 +60,9 @@ return clues;
     public void deactivate() {
         this.isActive = false;
     }
+    public void toggleIsActive() {
+        this.isActive = !isActive;
+    }
 
     public boolean isActive() {
         return isActive;
@@ -67,5 +70,9 @@ return clues;
 
     public String getId() {
         return id;
+    }
+
+    public void setName(String roomName) {
+        this.name = roomName;
     }
 }

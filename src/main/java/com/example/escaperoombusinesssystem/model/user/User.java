@@ -1,4 +1,4 @@
-package com.example.escaperoombusinesssystem;
+package com.example.escaperoombusinesssystem.model.user;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -32,6 +32,9 @@ public abstract class User {
     public String getRole() {
         return role;
     }
+    public abstract void accessDashboard();
 
-  public abstract void accessDashboard();
+    public void setPassword(String newPassword) {
+        this.hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+    }
 }
