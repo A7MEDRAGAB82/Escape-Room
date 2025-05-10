@@ -119,7 +119,7 @@ try {
 
 
         Connection conn = DBConnector.connect();
-        String sql = "insert into escape_rooms (name , diffuculty  , max_players ,  is_active , created_at) values(?, ?, ?, ?, ?) ";
+        String sql = "insert into escape_rooms (name , difficulty  , max_players ,  is_active , created_at) values(?, ?, ?, ?, ?) ";
 
 
         try (PreparedStatement pst = conn.prepareStatement(sql)) {

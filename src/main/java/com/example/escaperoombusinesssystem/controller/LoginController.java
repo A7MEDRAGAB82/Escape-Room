@@ -1,5 +1,6 @@
 package com.example.escaperoombusinesssystem.controller;
 
+import com.example.escaperoombusinesssystem.model.DBConnector;
 import com.example.escaperoombusinesssystem.model.user.Admin;
 import com.example.escaperoombusinesssystem.model.user.Customer;
 import com.example.escaperoombusinesssystem.model.user.Staff;
@@ -13,8 +14,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.scene.layout.GridPane;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
+import java.sql.*;
+import java.util.Set;
 
 public class LoginController {
 
@@ -30,7 +34,7 @@ public class LoginController {
     @FXML
     private Label errorMessageLabel;
 
-//  private DBConnector dbConnector = DBConnector.getInstance();
+    // private DBConnector dbConnector = DBConnector.getInstance();
 
     @FXML
     private void initialize() {
@@ -95,6 +99,40 @@ public class LoginController {
 
         return null;
     }
+
+
+//    private User authenticateUser(String username, String plainTextPassword) {
+  //      String query = "SELECT id, username, role, hashed_password FROM users WHERE username = ?";
+
+    //    try (Connection connection = DBConnector.connect();
+      //       PreparedStatement statement = connection.prepareStatement(query)) {
+
+        //    statement.setString(1, username);  // Secure parameterized query
+
+          //  try (ResultSet resultSet = statement.executeQuery()) {
+            //    if (resultSet.next()) {
+              //      String storedHash = resultSet.getString("hashed_password");
+                //    String role = resultSet.getString("role");
+                  //  int id = resultSet.getInt("id");
+
+                    // Verify password against BCrypt hash
+                  //  if (BCrypt.checkpw(plainTextPassword, storedHash)) {
+                    //    return switch (role.toLowerCase()) {
+                      //      case "admin" -> new Admin(username, storedHash);
+                        //    case "staff" -> new Staff(username, storedHash);
+                        //    case "customer" -> new Customer(username, storedHash);
+                       //     default -> throw new IllegalArgumentException("Unknown role: " + role);
+                    //    };
+                 //   }
+             //   }
+       //     }
+     //   } catch (SQLException e) {
+       //     System.err.println("Authentication error: " + e.getMessage());
+            // In production, use proper logging (e.g., SLF4J)
+      //  }
+
+        //return null;  // Authentication failed
+   // }
 
     private String getDashboardPathForRole(String role) {
         // TODO: If dashboard paths are stored in the database, fetch them here
@@ -188,6 +226,47 @@ public class LoginController {
             // TODO: Optionally, log the user in or redirect to login screen
         });
     }
+    // private boolean saveUserToDatabase(String username, String role, String plaintextpassword) {
+    // Input validation
+    //   if (username == null || username.trim().isEmpty()) {
+          //      throw new IllegalArgumentException("Username cannot be empty");
+//}
+//  if (plaintextpassword == null || plaintextpassword.isEmpty()) {
+//    throw new IllegalArgumentException("Password cannot be empty");
+//  }
+// if (role == null) {
+//   throw new IllegalArgumentException("Role cannot be null");
+// }
+
+// Normalize role
+// role = role.toLowerCase();
+// if (!Set.of("admin", "staff", "customer").contains(role)) {
+//    throw new IllegalArgumentException("Invalid role: " + role);
+// }
+
+// String sql = "INSERT INTO users (username, hashed_password, role) VALUES (?, ?, ?)";
+
+// try (Connection conn = DBConnector.connect();
+//    PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+// Hash the password
+//  String hashedPassword = BCrypt.hashpw(plaintextpassword, BCrypt.gensalt());
+
+//      stmt.setString(1, username.trim());
+//    stmt.setString(2, hashedPassword);
+//   stmt.setString(3, role);
+
+// return stmt.executeUpdate() == 1;
+
+//  } catch (SQLIntegrityConstraintViolationException e) {
+//     System.err.println("Username already exists: " + username);
+//   return false;
+// } catch (SQLException e) {
+//   System.err.println("Database error: " + e.getMessage());
+//  e.printStackTrace();
+//  return false;
+// }
+     //  }
 
     // Helper method for alerts
     private void showAlert(String title, String message) {

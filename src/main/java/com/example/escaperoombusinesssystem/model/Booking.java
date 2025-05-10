@@ -10,11 +10,12 @@ public class Booking {
     private LocalDateTime dateTime;
     private ArrayList <Player> players;
     private BookingStatus status;
+    private String customerId;
     private static final LocalTime opening = LocalTime.of(10, 0);
     private static final LocalTime closing = LocalTime.of(22, 0);
 
 
-    public Booking(EscapeRoom room, LocalDateTime dateTime, int players) {
+    public Booking(EscapeRoom room, LocalDateTime dateTime, int players , String customerId) {
         // Validate dateTime (existing checks)
         if (dateTime == null) {
             throw new IllegalArgumentException("Date Time can't be NULL");
@@ -48,7 +49,7 @@ public class Booking {
         }
 
         this.status = BookingStatus.CONFIRMED;
-        
+        this.customerId = customerId;
         // Add this booking to the room's bookings list
         room.addBooking(this);
     }
@@ -92,5 +93,9 @@ public class Booking {
 
     public void setBookingId(String bookingId) {
         this.bookingId = bookingId;
+    }
+
+    public String getCustomerId() {
+        return customerId;
     }
 }
