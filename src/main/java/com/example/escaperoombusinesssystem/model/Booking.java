@@ -33,7 +33,7 @@ public class Booking {
 
         // Validate players (existing checks)
         if (players > room.getMaxPlayers() || players < 2) {
-            throw new IllegalArgumentException("Players must be at least 2 and at most 5");
+            throw new IllegalArgumentException("Players must be at least 2 and at most"+ room.getMaxPlayers());
         }
         else {
             this.players = new ArrayList<>(players);
