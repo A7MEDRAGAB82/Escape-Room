@@ -15,11 +15,6 @@ public class Player {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("com.example.escaperoombusinesssystem.model.Player 's name can't be empty");
         }
-        else {
-            this.name = name;
-        }
-
-
         this.name = name;
         this.solvedClues = new ArrayList<>();
         this.startTime = LocalDateTime.now();
