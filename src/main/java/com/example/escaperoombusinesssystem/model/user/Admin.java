@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.example.escaperoombusinesssystem.model.BookingStatus.CANCELLED;
@@ -67,9 +68,9 @@ try {
        }
 
        // Add core data to the map
-       reportData.put("totalBookings", totalBookings);
-       reportData.put("confirmedBookings", confirmedBookings);
-       reportData.put("cancelledBookings", cancelledBookings);
+       reportData.put("totalBookings", Optional.of(totalBookings));
+       reportData.put("confirmedBookings", Optional.of(confirmedBookings));
+       reportData.put("cancelledBookings", Optional.of(cancelledBookings));
        reportData.put(
                "popularRooms",                     // Key for the report data map
                allRooms.subList(0, Math.min(3, allRooms.size()))  // Value: Top 3 rooms (or fewer if the list is small)
