@@ -33,43 +33,70 @@ import java.util.ResourceBundle;
 public class StaffController implements Initializable {
 
     // UI Components
-    @FXML private Label welcomeLabel;
-    @FXML private StackPane contentPane;
+    @FXML
+    private Label welcomeLabel;
+    @FXML
+    private StackPane contentPane;
 
     // Navigation buttons
-    @FXML private Button roomMonitorBtn;
-    @FXML private Button bookingManageBtn;
-    @FXML private Button playerAssistBtn;
+    @FXML
+    private Button roomMonitorBtn;
+    @FXML
+    private Button bookingManageBtn;
+    @FXML
+    private Button playerAssistBtn;
 
     // View containers
-    @FXML private VBox roomMonitorView;
-    @FXML private VBox bookingManageView;
-    @FXML private VBox playerAssistView;
+    @FXML
+    private VBox roomMonitorView;
+    @FXML
+    private VBox bookingManageView;
+    @FXML
+    private VBox playerAssistView;
 
     // Rooms table
-    @FXML private TableView<EscapeRoom> roomsTable;
-    @FXML private TableColumn<EscapeRoom, String> roomIdColumn;
-    @FXML private TableColumn<EscapeRoom, String> roomNameColumn;
-    @FXML private TableColumn<EscapeRoom, String> roomStatusColumn;
-    @FXML private TableColumn<EscapeRoom, String> currentBookingColumn;
-    @FXML private TableColumn<EscapeRoom, Void> roomActionColumn;
+    @FXML
+    private TableView<EscapeRoom> roomsTable;
+    @FXML
+    private TableColumn<EscapeRoom, String> roomIdColumn;
+    @FXML
+    private TableColumn<EscapeRoom, String> roomNameColumn;
+    @FXML
+    private TableColumn<EscapeRoom, String> roomStatusColumn;
+    @FXML
+    private TableColumn<EscapeRoom, String> currentBookingColumn;
+    @FXML
+    private TableColumn<EscapeRoom, Void> roomActionColumn;
 
     // Bookings table
-    @FXML private TableView<Booking> bookingsTable;
-    @FXML private TableColumn<Booking, String> bookingIdColumn;
-    @FXML private TableColumn<Booking, String> bookingRoomColumn;
-    @FXML private TableColumn<Booking, String> bookingTimeColumn;
-    @FXML private TableColumn<Booking, Integer> bookingPlayersColumn;
-    @FXML private TableColumn<Booking, String> bookingStatusColumn;
-    @FXML private TableColumn<Booking, Void> bookingActionColumn;
+    @FXML
+    private TableView<Booking> bookingsTable;
+    @FXML
+    private TableColumn<Booking, String> bookingIdColumn;
+    @FXML
+    private TableColumn<Booking, String> bookingRoomColumn;
+    @FXML
+    private TableColumn<Booking, String> bookingTimeColumn;
+    @FXML
+    private TableColumn<Booking, Integer> bookingPlayersColumn;
+    @FXML
+    private TableColumn<Booking, String> bookingStatusColumn;
+    @FXML
+    private TableColumn<Booking, Void> bookingActionColumn;
 
     // Players table
-    @FXML private TableView<Player> playersTable;
-    @FXML private TableColumn<Player, String> playerNameColumn;
-    @FXML private TableColumn<Player, String> playerRoomColumn;
-    @FXML private TableColumn<Player, Integer> playerCluesColumn;
-    @FXML private TableColumn<Player, String> playerTimeColumn;
-    @FXML private TableColumn<Player, Void> playerActionColumn;
+    @FXML
+    private TableView<Player> playersTable;
+    @FXML
+    private TableColumn<Player, String> playerNameColumn;
+    @FXML
+    private TableColumn<Player, String> playerRoomColumn;
+    @FXML
+    private TableColumn<Player, Integer> playerCluesColumn;
+    @FXML
+    private TableColumn<Player, String> playerTimeColumn;
+    @FXML
+    private TableColumn<Player, Void> playerActionColumn;
 
     // Data
     private ObservableList<EscapeRoom> roomData = FXCollections.observableArrayList();
@@ -95,14 +122,14 @@ public class StaffController implements Initializable {
     private void setupRoomTable() {
         roomIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         roomNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        roomStatusColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().isActive() ? "Active" : "Inactive"));
+        roomStatusColumn.setCellValueFactory(
+                cellData -> new SimpleStringProperty(cellData.getValue().isActive() ? "Active" : "Inactive"));
 
         currentBookingColumn.setCellValueFactory(cellData -> {
             EscapeRoom room = cellData.getValue();
             Booking current = findCurrentBooking(room);
-            return new SimpleStringProperty(current != null ?
-                    "Booked until " + formatTime(current.getDateTime()) : "Available");
+            return new SimpleStringProperty(
+                    current != null ? "Booked until " + formatTime(current.getDateTime()) : "Available");
         });
 
         roomActionColumn.setCellFactory(param -> new TableCell<>() {
@@ -141,12 +168,12 @@ public class StaffController implements Initializable {
 
     private void setupBookingTable() {
         bookingIdColumn.setCellValueFactory(new PropertyValueFactory<>("bookingId"));
-        bookingRoomColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getRoom().getName()));
-        bookingTimeColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(formatTime(cellData.getValue().getDateTime())));
-        bookingPlayersColumn.setCellValueFactory(cellData ->
-                new SimpleIntegerProperty(cellData.getValue().getPlayers().size()).asObject());
+        bookingRoomColumn
+                .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoom().getName()));
+        bookingTimeColumn.setCellValueFactory(
+                cellData -> new SimpleStringProperty(formatTime(cellData.getValue().getDateTime())));
+        bookingPlayersColumn.setCellValueFactory(
+                cellData -> new SimpleIntegerProperty(cellData.getValue().getPlayers().size()).asObject());
         bookingStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         bookingsTable.setItems(bookingData);
@@ -158,10 +185,10 @@ public class StaffController implements Initializable {
             EscapeRoom room = findPlayerRoom(cellData.getValue());
             return new SimpleStringProperty(room != null ? room.getName() : "Not in room");
         });
-        playerCluesColumn.setCellValueFactory(cellData ->
-                new SimpleIntegerProperty(cellData.getValue().getSolvedClues().size()).asObject());
-        playerTimeColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(formatDuration(cellData.getValue().getTimeElapsed())));
+        playerCluesColumn.setCellValueFactory(
+                cellData -> new SimpleIntegerProperty(cellData.getValue().getSolvedClues().size()).asObject());
+        playerTimeColumn.setCellValueFactory(
+                cellData -> new SimpleStringProperty(formatDuration(cellData.getValue().getTimeElapsed())));
 
         playerActionColumn.setCellFactory(param -> new TableCell<>() {
             private final Button hintBtn = new Button("Give Hint");
@@ -188,7 +215,6 @@ public class StaffController implements Initializable {
         playersTable.setItems(playerData);
     }
 
-
     // Navigation handlers
     @FXML
     private void showRoomMonitoring() {
@@ -214,7 +240,7 @@ public class StaffController implements Initializable {
         EscapeRoom selected = room;
         if (selected != null) {
             currentStaff.resetRoom(selected);
-            refreshData();
+            refreshTables();
             showAlert("Success", "Room " + selected.getName() + " has been reset");
         } else {
             showAlert("Error", "Please select a room to reset");
@@ -242,14 +268,15 @@ public class StaffController implements Initializable {
     private void handleLogout() {
         try {
             // Load the login view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/escaperoombusinesssystem/view/LoginView.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/escaperoombusinesssystem/view/LoginView.fxml"));
             Parent root = loader.load();
-            
+
             // Get the current stage and set the new scene
             Stage stage = (Stage) welcomeLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Escape Room System - Login");
-            
+
             // Clear the current staff data
             this.currentStaff = null;
         } catch (IOException e) {
@@ -293,8 +320,7 @@ public class StaffController implements Initializable {
         // Get the dialog pane and add style class
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add(
-                getClass().getResource("/css/styles.css").toExternalForm()
-        );
+                getClass().getResource("/css/styles.css").toExternalForm());
         dialogPane.getStyleClass().add("alert-dialog");
 
         alert.showAndWait();
@@ -343,7 +369,7 @@ public class StaffController implements Initializable {
             Optional<ButtonType> result = confirmation.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 currentStaff.resetRoom(selectedRoom);
-                refreshData();
+                refreshTables();
                 showAlert("Success", selectedRoom.getName() + " has been reset");
             }
         } else {
@@ -387,7 +413,8 @@ public class StaffController implements Initializable {
                     int maxPlayers = rs.getInt("max_players");
                     boolean isActive = rs.getBoolean("is_active");
                     EscapeRoom room = new EscapeRoom(id, name, difficulty, maxPlayers);
-                    if (!isActive) room.deactivate();
+                    if (!isActive)
+                        room.deactivate();
                     roomData.add(room);
                 }
             }
@@ -395,7 +422,7 @@ public class StaffController implements Initializable {
             // Refresh bookings table
             bookingData.clear();
             String bookingSql = "SELECT b.booking_id, b.room_id, b.booking_time, b.status, r.name as room_name " +
-                                "FROM bookings b JOIN escape_rooms r ON b.room_id = r.id";
+                    "FROM bookings b JOIN escape_rooms r ON b.room_id = r.id";
             try (PreparedStatement pst = conn.prepareStatement(bookingSql)) {
                 ResultSet rs = pst.executeQuery();
                 while (rs.next()) {
@@ -422,7 +449,8 @@ public class StaffController implements Initializable {
                 while (rs.next()) {
                     String name = rs.getString("name");
                     String bookingId = rs.getString("booking_id");
-                    Booking booking = bookingData.stream().filter(b -> b.getBookingId().equals(bookingId)).findFirst().orElse(null);
+                    Booking booking = bookingData.stream().filter(b -> b.getBookingId().equals(bookingId)).findFirst()
+                            .orElse(null);
                     if (booking != null) {
                         Player player = new Player(name);
                         playerData.add(player);
@@ -457,7 +485,7 @@ public class StaffController implements Initializable {
         typeChoice.getItems().addAll("Physical", "Puzzle", "Riddle", "Hidden", "Code");
         typeChoice.setValue("Physical");
         Button addBtn = new Button("Add Clue");
-        final boolean[] shouldReopen = {false};
+        final boolean[] shouldReopen = { false };
         addBtn.setOnAction(e -> {
             String desc = newDescField.getText();
             String sol = newSolutionField.getText();
