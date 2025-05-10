@@ -445,12 +445,12 @@ public class AdminController implements Initializable {
                 while (rs.next()) {
                     String bookingId = rs.getString("booking_id");
                     String roomId = rs.getString("room_id");
-                    LocalDateTime bookTime = rs.getTimestamp("book_time").toLocalDateTime();
+                    LocalDateTime bookTime = rs.getTimestamp("booking_time").toLocalDateTime();
                     String status = rs.getString("status");
                     String roomName = rs.getString("room_name");
                     EscapeRoom room = roomData.stream().filter(r -> r.getId().equals(roomId)).findFirst().orElse(null);
                     if (room != null) {
-                        Booking booking = new Booking(room, bookTime, 0); // You may want to load players count
+                        Booking booking = new Booking(room, bookTime, 2); // Default to minimum valid players
                         booking.setBookingId(bookingId);
                         booking.setStatus(BookingStatus.valueOf(status));
                         bookingData.add(booking);
@@ -465,7 +465,7 @@ public class AdminController implements Initializable {
                 ResultSet rs = pst.executeQuery();
                 while (rs.next()) {
                     String name = rs.getString("name");
-                    String bookingId = rs.getString("booking_id");
+                    String bookingId = rs.getString("booking");
                     Booking booking = bookingData.stream().filter(b -> b.getBookingId().equals(bookingId)).findFirst().orElse(null);
                     if (booking != null) {
                         Player player = new Player(name);
