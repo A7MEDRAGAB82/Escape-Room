@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.example.escaperoombusinesssystem.model.BookingStatus.CANCELLED;
@@ -118,7 +119,7 @@ try {
 
 
         Connection conn = DBConnector.connect();
-        String sql = "insert into escape_rooms (name , diffuculty  , max_players ,  is_active , created_at) values(?, ?, ?, ?, ?) ";
+        String sql = "insert into escape_rooms (name , difficulty  , max_players ,  is_active , created_at) values(?, ?, ?, ?, ?) ";
 
 
         try (PreparedStatement pst = conn.prepareStatement(sql)) {
