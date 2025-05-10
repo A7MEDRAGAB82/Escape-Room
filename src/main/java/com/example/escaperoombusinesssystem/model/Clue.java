@@ -1,19 +1,22 @@
 package com.example.escaperoombusinesssystem.model;
 
 public class Clue implements Solvable {
-    private  String description;
-    private  String solution;
-    private  boolean solved;
+    private static int nextId = 1;
+    private final int id;
+    private String description;
+    private String solution;
+    private boolean solved;
     private String type;
 
     public Clue(String description, String solution, String type) {
-        if (description == null ) {
+        this.id = nextId++;
+        if (description == null) {
             throw new IllegalArgumentException("Description cannot be null or empty");
         }
         if (solution == null) {
             throw new IllegalArgumentException("Solution cannot be null or empty");
         }
-        if (type == null ) {
+        if (type == null) {
             throw new IllegalArgumentException("Type cannot be null or empty");
         }
 
@@ -21,12 +24,14 @@ public class Clue implements Solvable {
         this.solution = solution;
         this.type = type;
     }
-   public boolean isSolved(){
+
+    public boolean isSolved() {
         return solved;
     }
-public String getHint(){
+
+    public String getHint() {
         return "The Mirror shows us nothing more or less than the deepest, most desperate desire of our hearts\n";
-}
+    }
 
     public void setDescription(String description) {
         this.description = description;
@@ -37,12 +42,12 @@ public String getHint(){
     }
 
     public String getSolution() {
-        return  solution;
+        return solution;
     }
 
-public void solve(){
-        solved=true;
-}
+    public void solve() {
+        solved = true;
+    }
 
     public void unsolve() {
         this.solved = false;
@@ -54,5 +59,9 @@ public void solve(){
 
     public String getType() {
         return type;
+    }
+
+    public int getId() {
+        return id;
     }
 }
