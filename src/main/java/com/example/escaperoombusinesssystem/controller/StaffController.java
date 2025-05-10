@@ -17,9 +17,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.geometry.Insets;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,13 +39,11 @@ public class StaffController implements Initializable {
     // Navigation buttons
     @FXML private Button roomMonitorBtn;
     @FXML private Button bookingManageBtn;
-    @FXML private Button clueManageBtn;
     @FXML private Button playerAssistBtn;
 
     // View containers
     @FXML private VBox roomMonitorView;
     @FXML private VBox bookingManageView;
-    @FXML private VBox clueManageView;
     @FXML private VBox playerAssistView;
 
     // Rooms table
@@ -61,13 +63,6 @@ public class StaffController implements Initializable {
     @FXML private TableColumn<Booking, String> bookingStatusColumn;
     @FXML private TableColumn<Booking, Void> bookingActionColumn;
 
-    // Clues table
-    @FXML private TableView<Clue> cluesTable;
-    @FXML private TableColumn<Clue, String> clueDescriptionColumn;
-    @FXML private TableColumn<Clue, String> clueTypeColumn;
-    @FXML private TableColumn<Clue, String> clueStatusColumn;
-    @FXML private TableColumn<Clue, Void> clueActionColumn;
-
     // Players table
     @FXML private TableView<Player> playersTable;
     @FXML private TableColumn<Player, String> playerNameColumn;
@@ -79,7 +74,6 @@ public class StaffController implements Initializable {
     // Data
     private ObservableList<EscapeRoom> roomData = FXCollections.observableArrayList();
     private ObservableList<Booking> bookingData = FXCollections.observableArrayList();
-    private ObservableList<Clue> clueData = FXCollections.observableArrayList();
     private ObservableList<Player> playerData = FXCollections.observableArrayList();
 
     private Staff currentStaff;
@@ -88,10 +82,9 @@ public class StaffController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setupRoomTable();
         setupBookingTable();
-        setupClueTable();
         setupPlayerTable();
-        loadSampleData();
         showRoomMonitoring();
+        refreshTables(); // Load data from DB on startup
     }
 
     public void setStaff(Staff staff) {
@@ -114,12 +107,21 @@ public class StaffController implements Initializable {
 
         roomActionColumn.setCellFactory(param -> new TableCell<>() {
             private final Button resetBtn = new Button("Reset Room");
+            private final Button viewCluesBtn = new Button("View/Edit Clues");
+            private final HBox buttons = new HBox(5, resetBtn, viewCluesBtn);
 
             {
                 resetBtn.getStyleClass().add("action-button");
+                viewCluesBtn.getStyleClass().add("edit-button");
+
                 resetBtn.setOnAction(event -> {
                     EscapeRoom room = getTableView().getItems().get(getIndex());
                     handleResetRoom(room);
+                });
+
+                viewCluesBtn.setOnAction(event -> {
+                    EscapeRoom room = getTableView().getItems().get(getIndex());
+                    handleViewEditRoomClues(room);
                 });
             }
 
@@ -129,7 +131,7 @@ public class StaffController implements Initializable {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(resetBtn);
+                    setGraphic(buttons);
                 }
             }
         });
@@ -148,46 +150,6 @@ public class StaffController implements Initializable {
         bookingStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         bookingsTable.setItems(bookingData);
-    }
-
-    private void setupClueTable() {
-        clueDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
-        clueTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        clueStatusColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().isSolved() ? "Solved" : "Unsolved"));
-
-        clueActionColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button resetBtn = new Button("Reset");
-            private final Button editBtn = new Button("Edit");
-            private final HBox buttons = new HBox(5, resetBtn, editBtn);
-
-            {
-                resetBtn.getStyleClass().add("action-button");
-                editBtn.getStyleClass().add("edit-button");
-
-                resetBtn.setOnAction(event -> {
-                    Clue clue = getTableView().getItems().get(getIndex());
-                    handleResetClue(clue);
-                });
-
-                editBtn.setOnAction(event -> {
-                    Clue clue = getTableView().getItems().get(getIndex());
-                    handleEditClue(clue);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(buttons);
-                }
-            }
-        });
-
-        cluesTable.setItems(clueData);
     }
 
     private void setupPlayerTable() {
@@ -226,37 +188,6 @@ public class StaffController implements Initializable {
         playersTable.setItems(playerData);
     }
 
-    private void loadSampleData() {
-        // Sample rooms
-        EscapeRoom hauntedMansion = new EscapeRoom("1", "Haunted Mansion", 5, 7);
-        EscapeRoom prisonBreak = new EscapeRoom("2", "Prison Break", 6, 6);
-        roomData.addAll(hauntedMansion, prisonBreak);
-
-        // Sample clues
-        Clue clue1 = new Clue("Look behind the painting", "Key is taped behind frame", "Physical");
-        Clue clue2 = new Clue("Solve the riddle", "Answer is 'time'", "Puzzle");
-        clueData.addAll(clue1, clue2);
-
-        // Sample players
-        Player player1 = new Player("John Doe");
-        player1.addSolvedClue(clue1);
-        Player player2 = new Player("Jane Smith");
-        playerData.addAll(player1, player2);
-
-        // Sample bookings
-//        LocalDateTime now = LocalDateTime.now();
-//        Booking booking1 = new Booking(hauntedMansion, now.plusHours(1), 4);
-//        booking1.setBookingId("B001");
-//        booking1.addPlayer(player1);
-//        booking1.setStatus(BookingStatus.CONFIRMED);
-//
-//        Booking booking2 = new Booking(prisonBreak, now.plusHours(3), 6);
-//        booking2.setBookingId("B002");
-//        booking2.addPlayer(player2);
-//        booking2.setStatus(BookingStatus.CONFIRMED);
-//
-//        bookingData.addAll(booking1, booking2);
-    }
 
     // Navigation handlers
     @FXML
@@ -269,12 +200,6 @@ public class StaffController implements Initializable {
     private void showBookingManagement() {
         setActiveView(bookingManageView);
         setActiveButton(bookingManageBtn);
-    }
-
-    @FXML
-    private void showClueManagement() {
-        setActiveView(clueManageView);
-        setActiveButton(clueManageBtn);
     }
 
     @FXML
@@ -300,24 +225,6 @@ public class StaffController implements Initializable {
     private void handleAddClue() {
         // Implementation for adding a new clue
         showAlert("Info", "Add clue functionality will be implemented here");
-    }
-
-    @FXML
-    private void handleResetClue(Clue clue) {
-        Clue selected = cluesTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            selected.unsolve();
-            refreshData();
-            showAlert("Success", "Clue has been reset");
-        } else {
-            showAlert("Error", "Please select a clue to reset");
-        }
-    }
-
-    @FXML
-    private void handleEditClue(Clue clue) {
-        // Implementation for editing a clue
-        showAlert("Info", "Edit clue functionality will be implemented here");
     }
 
     @FXML
@@ -355,7 +262,6 @@ public class StaffController implements Initializable {
     private void refreshData() {
         roomsTable.refresh();
         bookingsTable.refresh();
-        cluesTable.refresh();
         playersTable.refresh();
     }
 
@@ -363,7 +269,6 @@ public class StaffController implements Initializable {
     private void setActiveView(VBox view) {
         roomMonitorView.setVisible(false);
         bookingManageView.setVisible(false);
-        clueManageView.setVisible(false);
         playerAssistView.setVisible(false);
         view.setVisible(true);
     }
@@ -371,7 +276,6 @@ public class StaffController implements Initializable {
     private void setActiveButton(Button button) {
         roomMonitorBtn.getStyleClass().remove("active");
         bookingManageBtn.getStyleClass().remove("active");
-        clueManageBtn.getStyleClass().remove("active");
         playerAssistBtn.getStyleClass().remove("active");
 
         if (button != null) {
@@ -427,7 +331,6 @@ public class StaffController implements Initializable {
         return String.format("%02d:%02d", hours, minutes);
     }
 
-
     @FXML
     private void handleResetRoom() {
         EscapeRoom selectedRoom = roomsTable.getSelectionModel().getSelectedItem();
@@ -449,26 +352,6 @@ public class StaffController implements Initializable {
     }
 
     @FXML
-    private void handleResetClue() {
-        Clue selectedClue = cluesTable.getSelectionModel().getSelectedItem();
-        if (selectedClue != null) {
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmation.setTitle("Confirm Reset");
-            confirmation.setHeaderText("Reset this clue?");
-            confirmation.setContentText("This will mark the clue as unsolved.");
-
-            Optional<ButtonType> result = confirmation.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                selectedClue.unsolve();
-                refreshData();
-                showAlert("Success", "Clue has been reset");
-            }
-        } else {
-            showAlert("Error", "Please select a clue to reset");
-        }
-    }
-
-    @FXML
     private void handleGiveHint() {
         Player selectedPlayer = playersTable.getSelectionModel().getSelectedItem();
         if (selectedPlayer != null) {
@@ -486,6 +369,160 @@ public class StaffController implements Initializable {
             }
         } else {
             showAlert("Error", "Please select a player to give a hint");
+        }
+    }
+
+    @FXML
+    private void refreshTables() {
+        try (Connection conn = DBConnector.connect()) {
+            // Refresh rooms table
+            roomData.clear();
+            String roomSql = "SELECT id, name, difficulty, max_players, is_active FROM escape_rooms";
+            try (PreparedStatement pst = conn.prepareStatement(roomSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String id = rs.getString("id");
+                    String name = rs.getString("name");
+                    int difficulty = rs.getInt("difficulty");
+                    int maxPlayers = rs.getInt("max_players");
+                    boolean isActive = rs.getBoolean("is_active");
+                    EscapeRoom room = new EscapeRoom(id, name, difficulty, maxPlayers);
+                    if (!isActive) room.deactivate();
+                    roomData.add(room);
+                }
+            }
+
+            // Refresh bookings table
+            bookingData.clear();
+            String bookingSql = "SELECT b.booking_id, b.room_id, b.booking_time, b.status, r.name as room_name " +
+                                "FROM bookings b JOIN escape_rooms r ON b.room_id = r.id";
+            try (PreparedStatement pst = conn.prepareStatement(bookingSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String bookingId = rs.getString("booking_id");
+                    String roomId = rs.getString("room_id");
+                    LocalDateTime bookingTime = rs.getTimestamp("booking_time").toLocalDateTime();
+                    String status = rs.getString("status");
+                    String roomName = rs.getString("room_name");
+                    EscapeRoom room = roomData.stream().filter(r -> r.getId().equals(roomId)).findFirst().orElse(null);
+                    if (room != null) {
+                        Booking booking = new Booking(room, bookingTime, 2);
+                        booking.setBookingId(bookingId);
+                        booking.setStatus(BookingStatus.valueOf(status));
+                        bookingData.add(booking);
+                    }
+                }
+            }
+
+            // Refresh players table
+            playerData.clear();
+            String playerSql = "SELECT p.id, p.name, p.start_time FROM players p";
+            try (PreparedStatement pst = conn.prepareStatement(playerSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    String bookingId = rs.getString("booking_id");
+                    Booking booking = bookingData.stream().filter(b -> b.getBookingId().equals(bookingId)).findFirst().orElse(null);
+                    if (booking != null) {
+                        Player player = new Player(name);
+                        playerData.add(player);
+                        booking.addPlayer(player);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            showAlert("Error", "Failed to refresh data: " + e.getMessage());
+        }
+    }
+
+    // Add popup for viewing/editing clues for a room
+    private void handleViewEditRoomClues(EscapeRoom room) {
+        if (room == null) {
+            showAlert("Error", "Please select a room first");
+            return;
+        }
+        VBox clueBox = new VBox(10);
+        clueBox.setPadding(new Insets(15));
+        Label header = new Label("Clues in " + room.getName());
+        header.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
+        clueBox.getChildren().add(header);
+
+        // Add Clue Section
+        HBox addClueRow = new HBox(10);
+        TextField newDescField = new TextField();
+        newDescField.setPromptText("Description");
+        TextField newSolutionField = new TextField();
+        newSolutionField.setPromptText("Solution");
+        ChoiceBox<String> typeChoice = new ChoiceBox<>();
+        typeChoice.getItems().addAll("Physical", "Puzzle", "Riddle", "Hidden", "Code");
+        typeChoice.setValue("Physical");
+        Button addBtn = new Button("Add Clue");
+        final boolean[] shouldReopen = {false};
+        addBtn.setOnAction(e -> {
+            String desc = newDescField.getText();
+            String sol = newSolutionField.getText();
+            String type = typeChoice.getValue();
+            if (!desc.trim().isEmpty() && !sol.trim().isEmpty()) {
+                Clue newClue = new Clue(desc, sol, type);
+                room.addClue(newClue);
+                showAlert("Success", "Clue added.");
+                refreshTables();
+                shouldReopen[0] = true;
+                ((Stage) clueBox.getScene().getWindow()).close();
+            } else {
+                showAlert("Error", "Description and solution cannot be empty.");
+            }
+        });
+        addClueRow.getChildren().addAll(new Label("Add:"), newDescField, newSolutionField, typeChoice, addBtn);
+        clueBox.getChildren().add(addClueRow);
+
+        // Always reload clues from DB
+        java.util.List<Clue> clues = EscapeRoom.loadCluesForRoom(room.getId());
+        if (clues.isEmpty()) {
+            clueBox.getChildren().add(new Label("No clues available for this room"));
+        } else {
+            for (Clue clue : clues) {
+                HBox clueRow = new HBox(10);
+                clueRow.setPadding(new Insets(5));
+                Label descLabel = new Label("Description: ");
+                TextField descField = new TextField(clue.getDescription());
+                descField.setPrefWidth(200);
+                Button saveBtn = new Button("Save");
+                saveBtn.setOnAction(ev -> {
+                    String newDesc = descField.getText();
+                    if (!newDesc.trim().isEmpty()) {
+                        currentStaff.updateClue(clue, newDesc, clue.getSolution());
+                        showAlert("Success", "Clue description updated.");
+                        refreshTables();
+                        shouldReopen[0] = true;
+                        ((Stage) clueBox.getScene().getWindow()).close();
+                    } else {
+                        showAlert("Error", "Description cannot be empty.");
+                    }
+                });
+                Button markSolvedBtn = new Button("Mark as Solved");
+                markSolvedBtn.setOnAction(ev -> {
+                    clue.solve();
+                    showAlert("Success", "Clue marked as solved.");
+                    refreshTables();
+                    shouldReopen[0] = true;
+                    ((Stage) clueBox.getScene().getWindow()).close();
+                });
+                clueRow.getChildren().addAll(descLabel, descField, saveBtn, markSolvedBtn);
+                clueBox.getChildren().add(clueRow);
+            }
+        }
+        ScrollPane scrollPane = new ScrollPane(clueBox);
+        scrollPane.setFitToWidth(true);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Room Clues");
+        alert.setHeaderText("Clues in " + room.getName());
+        alert.getDialogPane().setContent(scrollPane);
+        alert.getDialogPane().setPrefSize(600, 400);
+        alert.showAndWait();
+        refreshTables();
+        if (shouldReopen[0]) {
+            handleViewEditRoomClues(room);
         }
     }
 

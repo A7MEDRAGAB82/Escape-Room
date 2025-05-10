@@ -129,7 +129,7 @@ try {
             pst.setInt(3, room.getMaxPlayers());
             pst.setBoolean(4, room.isActive());
             pst.setObject(5, LocalDateTime.now());
-            pst.executeQuery();
+            int row = pst.executeUpdate();
             Business.addRoom(room);
         } catch (SQLException e) {
             throw new RuntimeException(e);

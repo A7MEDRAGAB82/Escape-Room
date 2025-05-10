@@ -24,6 +24,9 @@ import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -74,8 +77,9 @@ public class CustomerController implements Initializable {
 
     public void setCustomer(Customer customer) {
         this.currentCustomer = customer;
-        loadSampleData();
         welcomeLabel.setText("Welcome, " + customer.getUsername());
+        refreshTables();
+
     }
 
     private void setupRoomTable() {
@@ -153,48 +157,6 @@ public class CustomerController implements Initializable {
         bookingsTable.setItems(bookingData);
     }
 
-    private void loadSampleData() {
-        // Add sample rooms to Business if empty
-        if (Business.getRooms().isEmpty()) {
-            try {
-                EscapeRoom hauntedMansion = new EscapeRoom("1", "Haunted Mansion", 5, 7);
-                EscapeRoom prisonBreak = new EscapeRoom("2", "Prison Break", 6, 6);
-                EscapeRoom spaceStation = new EscapeRoom("3", "Space Station", 4, 5);
-                
-                Business.addRoom(hauntedMansion);
-                Business.addRoom(prisonBreak);
-                Business.addRoom(spaceStation);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        // Load rooms from Business class
-        roomData.addAll(Business.getRooms());
-
-        // Add sample bookings for the current customer
-        if (currentCustomer != null) {
-            // Sample booking 1
-            EscapeRoom room1 = Business.getRooms().get(0); // Get first room
-            LocalDateTime dateTime1 = LocalDateTime.now().plusDays(1).withHour(14).withMinute(0);
-            try {
-                Booking booking1 = currentCustomer.makeBooking(room1, dateTime1, 4);
-                bookingData.add(booking1);
-            } catch (Exception e) {
-                // Handle exception if needed
-            }
-
-            // Sample booking 2
-            EscapeRoom room2 = Business.getRooms().get(1); // Get second room
-            LocalDateTime dateTime2 = LocalDateTime.now().plusDays(2).withHour(16).withMinute(0);
-            try {
-                Booking booking2 = currentCustomer.makeBooking(room2, dateTime2, 6);
-                bookingData.add(booking2);
-            } catch (Exception e) {
-                // Handle exception if needed
-            }
-        }
-    }
 
     // Navigation Methods
     @FXML
@@ -274,7 +236,7 @@ public class CustomerController implements Initializable {
 
         dialog.showAndWait().ifPresent(booking -> {
             currentCustomer.makeBooking(booking.getRoom(), booking.getDateTime(), booking.getPlayers().size());
-            bookingData.add(booking);
+            refreshData();
             showAlert("Success", "Room booked successfully!");
         });
     }
@@ -303,7 +265,6 @@ public class CustomerController implements Initializable {
             stage.setScene(new Scene(root));
             stage.setTitle("Escape Room System - Login");
         } catch (IOException e) {
-            e.printStackTrace();
             showAlert("Error", "Failed to load login screen");
         }
     }
@@ -314,8 +275,54 @@ public class CustomerController implements Initializable {
         bookingsTable.refresh();
     }
 
+    @FXML
+    private void refreshTables() {
+        try (Connection conn = DBConnector.connect()) {
+            // Refresh rooms table
+            roomData.clear();
+            String roomSql = "SELECT id, name, difficulty, max_players, is_active FROM escape_rooms";
+            try (PreparedStatement pst = conn.prepareStatement(roomSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String id = rs.getString("id");
+                    String name = rs.getString("name");
+                    int difficulty = rs.getInt("difficulty");
+                    int maxPlayers = rs.getInt("max_players");
+                    boolean isActive = rs.getBoolean("is_active");
+                    EscapeRoom room = new EscapeRoom(id, name, difficulty, maxPlayers);
+                    if (!isActive) room.deactivate();
+                    roomData.add(room);
+                }
+            }
+
+            // Refresh bookings table (show all bookings)
+            bookingData.clear();
+            String bookingSql = "SELECT b.booking_id, b.room_id, b.booking_time, b.status, r.name as room_name " +
+                                "FROM bookings b JOIN escape_rooms r ON b.room_id = r.id";
+            try (PreparedStatement pst = conn.prepareStatement(bookingSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String bookingId = rs.getString("booking_id");
+                    String roomId = rs.getString("room_id");
+                    LocalDateTime bookingTime = rs.getTimestamp("booking_time").toLocalDateTime();
+                    String status = rs.getString("status");
+                    String roomName = rs.getString("room_name");
+                    EscapeRoom room = roomData.stream().filter(r -> r.getId().equals(roomId)).findFirst().orElse(null);
+                    if (room != null) {
+                        Booking booking = new Booking(room, bookingTime, 2);
+                        booking.setBookingId(bookingId);
+                        booking.setStatus(BookingStatus.valueOf(status));
+                        bookingData.add(booking);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            showAlert("Error", "Failed to refresh data: " + e.getMessage());
+        }
+    }
+
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
