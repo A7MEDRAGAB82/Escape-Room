@@ -265,7 +265,6 @@ public class CustomerController implements Initializable {
             stage.setScene(new Scene(root));
             stage.setTitle("Escape Room System - Login");
         } catch (IOException e) {
-            e.printStackTrace();
             showAlert("Error", "Failed to load login screen");
         }
     }
@@ -323,7 +322,7 @@ public class CustomerController implements Initializable {
     }
 
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
