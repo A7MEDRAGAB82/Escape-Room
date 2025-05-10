@@ -52,6 +52,11 @@ public class Staff extends User {
                 clearStmt.setString(1, room.getId());
                 clearStmt.executeUpdate();
             }
+            String activateRoom = "UPDATE escape_rooms SET is_active = true WHERE id = ?";
+            try (PreparedStatement clearStmt = conn.prepareStatement(activateRoom)) {
+                clearStmt.setString(1, room.getId());
+                clearStmt.executeUpdate();
+            }
 
             // Mark old bookings as done
             String markBookingsSql = "UPDATE bookings SET status = ? WHERE room_id = ? AND booking_time < NOW()";
