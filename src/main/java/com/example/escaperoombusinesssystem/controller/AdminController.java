@@ -97,6 +97,7 @@ public class AdminController implements Initializable {
         setupBookingTable();
         setupUserTable();
         setupPlayerTable();
+        refreshTables();
     }
 
     public void setUser(User user) {
@@ -322,12 +323,17 @@ public class AdminController implements Initializable {
                 try {
                     String newId = String.valueOf(roomData.size() + 1);
                     EscapeRoom newRoom = new EscapeRoom(newId, roomName, 3, 6); // Default difficulty 3, max players 6
-                    
+
                     if (currentUser instanceof Admin) {
                         Admin admin = (Admin) currentUser;
                         admin.addRoom(newRoom);
-                        roomData.add(newRoom);
-                        showAlert("Success", "Room '" + roomName + "' added successfully");
+                        try {
+//                            newRoom.saveToDatabase(); // Save to DB
+                            roomData.add(newRoom);
+                            showAlert("Success", "Room '" + roomName + "' added successfully");
+                        } catch (Exception e) {
+                            showAlert("Error", "Failed to save room to database: " + e.getMessage());
+                        }
                     } else {
                         showAlert("Error", "Only admin users can add rooms");
                     }
@@ -398,24 +404,24 @@ public class AdminController implements Initializable {
 
     @FXML
     private void refreshTables() {
-        try {
+        try (Connection conn = DBConnector.connect()) {
             // Refresh users table
             userData.clear();
-            Connection conn = DBConnector.connect();
-            String userSql = "SELECT username, role, password_hash FROM users";
+            String userSql = "SELECT username, role, hashed_password FROM users";
             try (PreparedStatement pst = conn.prepareStatement(userSql)) {
                 ResultSet rs = pst.executeQuery();
                 while (rs.next()) {
                     String username = rs.getString("username");
                     String role = rs.getString("role");
-                    User user = createUserByRole(username, "dummy", role);
+                    String hashedPassword = rs.getString("hashed_password");
+                    User user = createUserByRole(username, hashedPassword, role);
                     userData.add(user);
                 }
             }
 
             // Refresh rooms table
             roomData.clear();
-            String roomSql = "SELECT id, name, difficulty, max_players, is_active FROM rooms";
+            String roomSql = "SELECT id, name, difficulty, max_players, is_active FROM escape_rooms";
             try (PreparedStatement pst = conn.prepareStatement(roomSql)) {
                 ResultSet rs = pst.executeQuery();
                 while (rs.next()) {
@@ -424,25 +430,49 @@ public class AdminController implements Initializable {
                     int difficulty = rs.getInt("difficulty");
                     int maxPlayers = rs.getInt("max_players");
                     boolean isActive = rs.getBoolean("is_active");
-                    
                     EscapeRoom room = new EscapeRoom(id, name, difficulty, maxPlayers);
-                    if (!isActive) {
-                        room.deactivate();
-                    }
+                    if (!isActive) room.deactivate();
                     roomData.add(room);
                 }
             }
 
             // Refresh bookings table
             bookingData.clear();
-            for (EscapeRoom room : roomData) {
-                bookingData.addAll(room.getBookings());
+            String bookingSql = "SELECT b.booking_id, b.room_id, b.booking_time, b.status, r.name as room_name " +
+                                "FROM bookings b JOIN escape_rooms r ON b.room_id = r.id";
+            try (PreparedStatement pst = conn.prepareStatement(bookingSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String bookingId = rs.getString("booking_id");
+                    String roomId = rs.getString("room_id");
+                    LocalDateTime bookTime = rs.getTimestamp("book_time").toLocalDateTime();
+                    String status = rs.getString("status");
+                    String roomName = rs.getString("room_name");
+                    EscapeRoom room = roomData.stream().filter(r -> r.getId().equals(roomId)).findFirst().orElse(null);
+                    if (room != null) {
+                        Booking booking = new Booking(room, bookTime, 0); // You may want to load players count
+                        booking.setBookingId(bookingId);
+                        booking.setStatus(BookingStatus.valueOf(status));
+                        bookingData.add(booking);
+                    }
+                }
             }
 
             // Refresh players table
             playerData.clear();
-            for (Booking booking : bookingData) {
-                playerData.addAll(booking.getPlayers());
+            String playerSql = "SELECT p.id, p.name, p.start_time FROM players p";
+            try (PreparedStatement pst = conn.prepareStatement(playerSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    String bookingId = rs.getString("booking_id");
+                    Booking booking = bookingData.stream().filter(b -> b.getBookingId().equals(bookingId)).findFirst().orElse(null);
+                    if (booking != null) {
+                        Player player = new Player(name);
+                        playerData.add(player);
+                        booking.addPlayer(player);
+                    }
+                }
             }
         } catch (Exception e) {
             showAlert("Error", "Failed to refresh data: " + e.getMessage());
