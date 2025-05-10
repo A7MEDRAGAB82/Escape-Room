@@ -20,6 +20,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -90,8 +93,8 @@ public class StaffController implements Initializable {
         setupBookingTable();
         setupClueTable();
         setupPlayerTable();
-        loadSampleData();
         showRoomMonitoring();
+        refreshTables(); // Load data from DB on startup
     }
 
     public void setStaff(Staff staff) {
@@ -486,6 +489,69 @@ public class StaffController implements Initializable {
             }
         } else {
             showAlert("Error", "Please select a player to give a hint");
+        }
+    }
+
+    @FXML
+    private void refreshTables() {
+        try (Connection conn = DBConnector.connect()) {
+            // Refresh rooms table
+            roomData.clear();
+            String roomSql = "SELECT id, name, difficulty, max_players, is_active FROM escape_rooms";
+            try (PreparedStatement pst = conn.prepareStatement(roomSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String id = rs.getString("id");
+                    String name = rs.getString("name");
+                    int difficulty = rs.getInt("difficulty");
+                    int maxPlayers = rs.getInt("max_players");
+                    boolean isActive = rs.getBoolean("is_active");
+                    EscapeRoom room = new EscapeRoom(id, name, difficulty, maxPlayers);
+                    if (!isActive) room.deactivate();
+                    roomData.add(room);
+                }
+            }
+
+            // Refresh bookings table
+            bookingData.clear();
+            String bookingSql = "SELECT b.booking_id, b.room_id, b.booking_time, b.status, r.name as room_name " +
+                                "FROM bookings b JOIN escape_rooms r ON b.room_id = r.id";
+            try (PreparedStatement pst = conn.prepareStatement(bookingSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String bookingId = rs.getString("booking_id");
+                    String roomId = rs.getString("room_id");
+                    LocalDateTime bookingTime = rs.getTimestamp("booking_time").toLocalDateTime();
+                    String status = rs.getString("status");
+                    String roomName = rs.getString("room_name");
+                    EscapeRoom room = roomData.stream().filter(r -> r.getId().equals(roomId)).findFirst().orElse(null);
+                    if (room != null) {
+                        Booking booking = new Booking(room, bookingTime, 2);
+                        booking.setBookingId(bookingId);
+                        booking.setStatus(BookingStatus.valueOf(status));
+                        bookingData.add(booking);
+                    }
+                }
+            }
+
+            // Refresh players table
+            playerData.clear();
+            String playerSql = "SELECT p.id, p.name, p.start_time FROM players p";
+            try (PreparedStatement pst = conn.prepareStatement(playerSql)) {
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    String bookingId = rs.getString("booking_id");
+                    Booking booking = bookingData.stream().filter(b -> b.getBookingId().equals(bookingId)).findFirst().orElse(null);
+                    if (booking != null) {
+                        Player player = new Player(name);
+                        playerData.add(player);
+                        booking.addPlayer(player);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            showAlert("Error", "Failed to refresh data: " + e.getMessage());
         }
     }
 
