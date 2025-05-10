@@ -30,30 +30,45 @@ public class EscapeRoom {
         this.clues = new ArrayList<>();
     }
 
-   public void addClue(Clue clue){
+   public void addClue(Clue clue) {
        if (clue == null) {
            throw new IllegalArgumentException("Clue cannot be null");
        }
 
        Connection conn = DBConnector.connect();
-       String sql = "insert into clues (description , solution , solved , type ) values (? , ? , ? , ?) ";
+       try {
+           // Insert clue and get generated clue id
+           String clueSql = "INSERT INTO clues (description, solution, solved, type) VALUES (?, ?, ?, ?) RETURNING id";
+           int clueId = -1;
+           try (PreparedStatement pst = conn.prepareStatement(clueSql)) {
+               pst.setString(1, clue.getDescription());
+               pst.setString(2, clue.getSolution());
+               pst.setBoolean(3, clue.isSolved());
+               pst.setString(4, clue.getType());
+               ResultSet rs = pst.executeQuery();
+               if (rs.next()) {
+                   clueId = rs.getInt(1);
+               }
+           }
 
-
-       try (PreparedStatement pst = conn.prepareStatement(sql)) {
-
-           pst.setString(1, clue.getDescription());
-           pst.setString(2, clue.getSolution());
-           pst.setBoolean(3, clue.isSolved());
-           pst.setString(4, clue.getType());
-           pst.executeQuery();
+           // Link clue to this room
+           if (clueId != -1) {
+               String linkSql = "INSERT INTO escape_room_clues (room_id, clue_id) VALUES (?, ?)";
+               try (PreparedStatement pst = conn.prepareStatement(linkSql)) {
+                   pst.setString(1, this.id);
+                   pst.setInt(2, clueId);
+                   pst.executeUpdate();
+               }
+           }
 
            this.clues.add(clue);
 
        } catch (SQLException e) {
            throw new RuntimeException(e);
        }
+   }
 
-    }
+
 
     // Static method to fetch EscapeRoom by ID from database
     public static EscapeRoom getById(String roomId) {
@@ -135,5 +150,29 @@ return clues;
 
     public void setName(String roomName) {
         this.name = roomName;
+    }
+
+    public static List<Clue> loadCluesForRoom(String roomId) {
+        List<Clue> clues = new ArrayList<>();
+        try (Connection conn = DBConnector.connect()) {
+            String sql = "SELECT c.id, c.description, c.solution, c.type, c.solved " +
+                         "FROM clues c JOIN escape_room_clues erc ON c.id = erc.clue_id WHERE erc.room_id = ?";
+            try (PreparedStatement pst = conn.prepareStatement(sql)) {
+                pst.setString(1, roomId);
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    Clue clue = new Clue(
+                        rs.getString("description"),
+                        rs.getString("solution"),
+                        rs.getString("type")
+                    );
+                    if (rs.getBoolean("solved")) clue.solve();
+                    clues.add(clue);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return clues;
     }
 }

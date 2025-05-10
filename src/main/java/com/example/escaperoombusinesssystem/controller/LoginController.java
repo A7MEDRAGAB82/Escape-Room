@@ -51,88 +51,68 @@ public class LoginController {
 
         // Validate input
         if (username.isEmpty() || password.isEmpty()) {
+            showAlert("Error", "Username and password are required");
             return;
         }
 
-        // TODO: Replace authenticateUser with a database call to validate user credentials
         User user = authenticateUser(username, password);
 
         if (user != null) {
             try {
-                // TODO: Optionally, fetch user details/roles from the database here if not already done
-                // Load appropriate dashboard based on user role
                 String dashboardPath = getDashboardPathForRole(user.getRole());
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(dashboardPath));
                 Parent root = loader.load();
 
-                // Get the controller and set the user
                 Object controller = loader.getController();
                 if (controller != null) {
                     passUserToController(controller, user);
                 }
 
-                // Show the dashboard
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.setTitle(user.getRole() + " Dashboard");
                 stage.show();
 
             } catch (IOException e) {
-                e.printStackTrace();
+                showAlert("Error", "Failed to load dashboard: " + e.getMessage());
             }
+        } else {
+            showAlert("Error", "Invalid username or password");
+            passwordField.clear();
         }
     }
 
-    private User authenticateUser(String username, String password) {
-        // TODO: Implement user authentication using the database
-        // Example: return dbConnector.getUser(username, password);
+    private User authenticateUser(String username, String plainTextPassword) {
+        String query = "SELECT id, username, role, hashed_password FROM users WHERE username = ?";
 
-        // only demo , delete after db addition
-        if (username.equals("admin") && password.equals("admin123")) {
-            System.out.println("Admin logged in");
-            return new Admin(username, password);
-        } else if (username.equals("staff") && password.equals("staff123")) {
-            return new Staff(username, password);
-        } else if (username.equals("customer") && password.equals("customer123")) {
-            return new Customer(username, password);
+        try (Connection connection = DBConnector.connect();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setString(1, username);  // Secure parameterized query
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    String storedHash = resultSet.getString("hashed_password");
+                    String role = resultSet.getString("role");
+                    // String id = resultSet.getString("id"); // UUID, not used
+
+//                     Verify password against BCrypt hash
+                    if (BCrypt.checkpw(plainTextPassword, storedHash)) {
+                        return switch (role.toLowerCase()) {
+                            case "admin" -> new Admin(username, storedHash);
+                            case "staff" -> new Staff(username, storedHash);
+                            case "customer" -> new Customer(username, storedHash);
+                            default -> throw new IllegalArgumentException("Unknown role: " + role);
+                        };
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Authentication error: " + e.getMessage());
         }
 
-        return null;
+        return null;  // Authentication failed
     }
-
-
-//    private User authenticateUser(String username, String plainTextPassword) {
-  //      String query = "SELECT id, username, role, hashed_password FROM users WHERE username = ?";
-
-    //    try (Connection connection = DBConnector.connect();
-      //       PreparedStatement statement = connection.prepareStatement(query)) {
-
-        //    statement.setString(1, username);  // Secure parameterized query
-
-          //  try (ResultSet resultSet = statement.executeQuery()) {
-            //    if (resultSet.next()) {
-              //      String storedHash = resultSet.getString("hashed_password");
-                //    String role = resultSet.getString("role");
-                  //  int id = resultSet.getInt("id");
-
-                    // Verify password against BCrypt hash
-                  //  if (BCrypt.checkpw(plainTextPassword, storedHash)) {
-                    //    return switch (role.toLowerCase()) {
-                      //      case "admin" -> new Admin(username, storedHash);
-                        //    case "staff" -> new Staff(username, storedHash);
-                        //    case "customer" -> new Customer(username, storedHash);
-                       //     default -> throw new IllegalArgumentException("Unknown role: " + role);
-                    //    };
-                 //   }
-             //   }
-       //     }
-     //   } catch (SQLException e) {
-       //     System.err.println("Authentication error: " + e.getMessage());
-            // In production, use proper logging (e.g., SLF4J)
-      //  }
-
-        //return null;  // Authentication failed
-   // }
 
     private String getDashboardPathForRole(String role) {
         // TODO: If dashboard paths are stored in the database, fetch them here
@@ -174,7 +154,7 @@ public class LoginController {
         PasswordField confirmPasswordField = new PasswordField();
         confirmPasswordField.setPromptText("Confirm Password");
         ComboBox<String> roleBox = new ComboBox<>();
-        roleBox.getItems().addAll("admin", "staff", "customer");
+        roleBox.getItems().addAll("Admin", "Staff", "Customer");
         roleBox.setValue("customer");
 
         grid.add(new Label("Username:"), 0, 0);
@@ -207,15 +187,47 @@ public class LoginController {
                     showAlert("Error", "Passwords do not match.");
                     return null;
                 }
-                // TODO: Check if username already exists in the database
 
-                // TODO: Save the new user to the database here
-                // For now, just create the user object
-                switch (role.toLowerCase()) {
-                    case "admin": return new Admin(username, password);
-                    case "staff": return new Staff(username, password);
-                    case "customer": return new Customer(username, password);
-                    default: return null;
+                // Check if username already exists
+                try (Connection conn = DBConnector.connect();
+                     PreparedStatement checkStmt = conn.prepareStatement("SELECT 1 FROM users WHERE username = ?")) {
+                    checkStmt.setString(1, username);
+                    ResultSet rs = checkStmt.executeQuery();
+                    if (rs.next()) {
+                        showAlert("Error", "Username already exists.");
+                        return null;
+                    }
+                } catch (SQLException e) {
+                    showAlert("Error", "Database error: " + e.getMessage());
+                    return null;
+                }
+
+                // Save the new user to the database
+                String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+                // Capitalize role for DB constraint
+                String dbRole = role.substring(0, 1).toUpperCase() + role.substring(1).toLowerCase();
+                String insertSql = "INSERT INTO users (username, role, hashed_password) VALUES (?, ?, ?)";
+                try (Connection conn = DBConnector.connect();
+                     PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                    insertStmt.setString(1, username);
+                    insertStmt.setString(2, dbRole);
+                    insertStmt.setString(3, hashedPassword);
+                    int rows = insertStmt.executeUpdate();
+                    if (rows == 1) {
+                        showAlert("Success", "Registration successful for user: " + username);
+                        return switch (dbRole) {
+                            case "Admin" -> new Admin(username, hashedPassword);
+                            case "Staff" -> new Staff(username, hashedPassword);
+                            case "Customer" -> new Customer(username, hashedPassword);
+                            default -> null;
+                        };
+                    } else {
+                        showAlert("Error", "Registration failed. Please try again.");
+                        return null;
+                    }
+                } catch (SQLException e) {
+                    showAlert("Error", "Database error: " + e.getMessage());
+                    return null;
                 }
             }
             return null;
@@ -270,7 +282,7 @@ public class LoginController {
 
     // Helper method for alerts
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

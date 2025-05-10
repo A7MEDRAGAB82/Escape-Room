@@ -35,7 +35,7 @@ public class Customer extends User {
         if (!isRoomAvailable(room, dateTime)) {
             throw new RuntimeException("Room not available at " + dateTime);
         }
-        Booking newBooking = new Booking(room, dateTime, players, this.customerId);
+        Booking newBooking = new Booking(room, dateTime, players);
 
         Connection conn = DBConnector.connect();
         String sql = "INSERT INTO bookings (room_id, booking_time, status, created_at, customer_id) VALUES (?, ?, ?, ?, ?)";
@@ -75,8 +75,7 @@ public class Customer extends User {
                 Booking booking = new Booking(
                         room,
                         rs.getObject("booking_time", LocalDateTime.class),
-                        rs.getInt("player_count"),
-                        rs.getString("customer_id")
+                        rs.getInt("player_count")
                 );
                 booking.setBookingId(rs.getString("booking_id"));
                 booking.setStatus(BookingStatus.valueOf(rs.getString("status")));
