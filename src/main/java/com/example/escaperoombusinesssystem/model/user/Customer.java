@@ -5,15 +5,18 @@ import com.example.escaperoombusinesssystem.model.BookingStatus;
 import com.example.escaperoombusinesssystem.model.DBConnector;
 import com.example.escaperoombusinesssystem.model.EscapeRoom;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class Customer extends User {
+    private final String customerId;  // final because it's set once at creation
 
     public Customer(String username, String password) {
         super(username, "Customer", password);
+        this.customerId = UUID.randomUUID().toString();  // Auto-generate ID
     }
 
     // Check room availability directly through EscapeRoom
@@ -32,26 +35,57 @@ public class Customer extends User {
         if (!isRoomAvailable(room, dateTime)) {
             throw new RuntimeException("Room not available at " + dateTime);
         }
-        Booking newBooking = new Booking(room, dateTime, players);
+        Booking newBooking = new Booking(room, dateTime, players, this.customerId);
 
         Connection conn = DBConnector.connect();
-        String sql = "insert into bookings ( room_id , booking_time , status , created_at) values ( ?, ?, ?, ?)";
-        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+        String sql = "INSERT INTO bookings (room_id, booking_time, status, created_at, customer_id) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement pst = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, room.getId());
             pst.setObject(2, newBooking.getDateTime());
-            if (newBooking.getStatus() == BookingStatus.CONFIRMED) {
-                pst.setString(3, "CONFIRMED");
-            } else {
-                throw new IllegalStateException("Failed to confirm your booking");
-            }
+            pst.setString(3, "CONFIRMED");
             pst.setObject(4, LocalDateTime.now());
-            pst.executeQuery();
+            pst.setString(5, this.customerId);
+            pst.executeUpdate();
 
-            room.addBooking(newBooking); // Auto-registers with the room
+            // Get the generated booking ID
+            try (ResultSet rs = pst.getGeneratedKeys()) {
+                if (rs.next()) {
+                    newBooking.setBookingId(rs.getString(1));
+                }
+            }
+
+            room.addBooking(newBooking);
             return newBooking;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<Booking> getMyBookings() {
+        List<Booking> myBookings = new ArrayList<>();
+        Connection conn = DBConnector.connect();
+        String sql = "SELECT * FROM bookings WHERE customer_id = ?";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, this.customerId);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                // You'll need to implement a method to get EscapeRoom by ID
+                EscapeRoom room = EscapeRoom.getById(rs.getString("room_id"));
+                Booking booking = new Booking(
+                        room,
+                        rs.getObject("booking_time", LocalDateTime.class),
+                        rs.getInt("player_count"),
+                        rs.getString("customer_id")
+                );
+                booking.setBookingId(rs.getString("booking_id"));
+                booking.setStatus(BookingStatus.valueOf(rs.getString("status")));
+                myBookings.add(booking);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return myBookings;
     }
 
         public BookingStatus checkStatus(Booking booking) {
@@ -70,6 +104,9 @@ public class Customer extends User {
             throw new RuntimeException(e);
         }
         booking.cancel();
+    }
+    public String getCustomerId() {
+        return customerId;
     }
 
     @Override
