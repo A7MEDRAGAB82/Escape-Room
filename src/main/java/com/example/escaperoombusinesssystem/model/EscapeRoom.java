@@ -2,6 +2,7 @@ package com.example.escaperoombusinesssystem.model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -52,9 +53,40 @@ public class EscapeRoom {
            throw new RuntimeException(e);
        }
 
+    }
 
+    // Static method to fetch EscapeRoom by ID from database
+    public static EscapeRoom getById(String roomId) {
+        Connection conn = DBConnector.connect();
+        String sql = "SELECT * FROM escape_rooms WHERE id = ?";
 
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, roomId);
+            ResultSet rs = pst.executeQuery();
 
+            if (rs.next()) {
+                // Create and return the EscapeRoom object
+                EscapeRoom room = new EscapeRoom(
+                        rs.getString("id"),
+                        rs.getString("name"),
+                        rs.getInt("difficulty"),
+                        rs.getInt("max_players")
+                );
+
+                // Set active status if stored in DB
+                if (rs.getBoolean("is_active")) {
+                    room.activate();
+                } else {
+                    room.deactivate();
+                }
+
+                return room;
+            } else {
+                throw new RuntimeException("EscapeRoom not found with ID: " + roomId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
    public ArrayList<Clue> getClues(){
