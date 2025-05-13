@@ -1,4 +1,4 @@
-package com.example.escaperoombusinesssystem.model;
+package com.example.escaperoombusinesssystem.database;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
