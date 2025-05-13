@@ -20,4 +20,6 @@ module com.example.escaperoombusinesssystem {
     opens com.example.escaperoombusinesssystem.model.user to javafx.fxml;
     opens com.example.escaperoombusinesssystem.model to javafx.fxml;
     exports com.example.escaperoombusinesssystem.model;
+    exports com.example.escaperoombusinesssystem.database;
+    opens com.example.escaperoombusinesssystem.database to javafx.fxml;
 }
