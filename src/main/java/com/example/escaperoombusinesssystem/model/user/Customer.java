@@ -2,7 +2,7 @@ package com.example.escaperoombusinesssystem.model.user;
 
 import com.example.escaperoombusinesssystem.model.Booking;
 import com.example.escaperoombusinesssystem.model.BookingStatus;
-import com.example.escaperoombusinesssystem.model.DBConnector;
+import com.example.escaperoombusinesssystem.database.DBConnector;
 import com.example.escaperoombusinesssystem.model.EscapeRoom;
 
 import java.sql.*;
