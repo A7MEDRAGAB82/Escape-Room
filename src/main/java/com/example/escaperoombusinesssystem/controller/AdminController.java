@@ -1,5 +1,6 @@
 package com.example.escaperoombusinesssystem.controller;
 
+import com.example.escaperoombusinesssystem.database.DBConnector;
 import com.example.escaperoombusinesssystem.model.*;
 import com.example.escaperoombusinesssystem.model.user.*;
 import javafx.beans.property.SimpleIntegerProperty;

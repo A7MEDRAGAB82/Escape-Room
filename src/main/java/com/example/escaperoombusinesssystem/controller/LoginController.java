@@ -1,6 +1,6 @@
 package com.example.escaperoombusinesssystem.controller;
 
-import com.example.escaperoombusinesssystem.model.DBConnector;
+import com.example.escaperoombusinesssystem.database.DBConnector;
 import com.example.escaperoombusinesssystem.model.user.Admin;
 import com.example.escaperoombusinesssystem.model.user.Customer;
 import com.example.escaperoombusinesssystem.model.user.Staff;

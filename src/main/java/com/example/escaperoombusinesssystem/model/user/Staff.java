@@ -1,5 +1,6 @@
 package com.example.escaperoombusinesssystem.model.user;
 
+import com.example.escaperoombusinesssystem.database.DBConnector;
 import com.example.escaperoombusinesssystem.model.*;
 
 import java.sql.Connection;

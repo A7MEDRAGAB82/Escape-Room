@@ -1,5 +1,7 @@
 package com.example.escaperoombusinesssystem.model;
 
+import com.example.escaperoombusinesssystem.database.DBConnector;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
